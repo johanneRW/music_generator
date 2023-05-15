@@ -6,6 +6,7 @@
   import { onMount } from "svelte"
   import AuthGuard from "./guards/AuthGuard.svelte"
   import Keyboard from "./pages/piano/keyboard.svelte";
+  import Generator from "./pages/login/generator/generator.svelte"
 
   function handleLogout() {
     logout()
@@ -31,13 +32,14 @@ function noteOff(event) {
   <AuthGuard>
     <div slot="authed">
       <nav>
-        <Link to="/">Pianos</Link>
+        <Link to="/">Piano</Link>
         <button id="logoutbutton" on:click={handleLogout}>Log out</button>
       </nav>
     </div>
     <div slot="not_authed">
       <nav>
-        <Link to="/">Keyboard</Link>
+        <Link to="/generator">Music generator</Link>
+        <Link to="/">Piano</Link>
         <button id="signupbutton">
           <Link to="/signup">Sign up</Link>
         </button>
@@ -49,7 +51,12 @@ function noteOff(event) {
   </AuthGuard>
 
   <Route path="/">
-    <Keyboard/>
+    
+<Keyboard octaves={2} on:noteon={noteOn} on:noteoff={noteOff} />
+
+<!-- {#each logs as log}
+    <div>{log}</div>
+{/each}<!-- <Keyboard/> --> 
   </Route>
   <Route path="/signup">
     <SignUp />
@@ -57,17 +64,13 @@ function noteOff(event) {
   <Route path="/login">
     <Login />
   </Route>
+  <Route path="/generator" component={Generator} />
 </Router>
 <br>
-<svelte:head>
+<!-- <svelte:head>
     <title>Svelte Piano</title>
-</svelte:head>
+</svelte:head> -->
 
-<Keyboard octaves={2} on:noteon={noteOn} on:noteoff={noteOff} />
-
-{#each logs as log}
-    <div>{log}</div>
-{/each}
 
 <style>
   :global(body) {

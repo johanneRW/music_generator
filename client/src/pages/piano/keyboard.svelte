@@ -1,18 +1,31 @@
 <script>
     import { createEventDispatcher } from "svelte";
+    import { tick } from 'svelte';
     import { onMount } from "svelte";
-    import Key from "../piano/key.svelte"
+    import Key from "../piano/key.svelte";
+    import Player from "../../Player/player.svelte";
+    import playNoteSound from "../../Player/player.svelte";
 
     export let octaves = 2;
     export let middleC = 60;
     export let keysPressed = [];
-    
+
+    let noteLog = [];
+    $: {
+  if (noteLog.length > 10) {
+    noteLog.splice(0, 1);
+  }
+}
+
+
     let keys;
     $: keys = [...Array(octaves * 12 + 1).keys()].map(
         (i) => i + (middleC - Math.floor(octaves / 2) * 12)
     );
 
-    const keyToPlaybackRate = {
+    let pitch;
+
+    /*  const keyToPlaybackRate = {
         48: 0.5,   // C3
         49: 0.529, // C#3
         50: 0.561, // D3
@@ -49,11 +62,11 @@
         81: 3.364, // A5
         82: 3.564, // A#5
         83: 3.776, // B5
-    };
+    }; */
 
     const dispatch = createEventDispatcher();
-  
-    let audioContext;
+
+    /*   let audioContext;
     let buffer;
   
     onMount(async () => {
@@ -69,38 +82,157 @@
       source.playbackRate.value = pitch;
       source.connect(audioContext.destination);
       source.start(0);
-    }
+    } */
 
-    function noteOn(event) {
+    /* function noteOn(event) {
         dispatch("noteon", event.detail);
 
         const playbackRateForKey = keyToPlaybackRate[event.detail]
         playSound(playbackRateForKey)
+    } */
+
+    /*   function noteOn(event) {
+        dispatch("noteon", event.detail);
+
+        const playbackRateForKey = keyToPlaybackRate[event.detail]
+        playSound(playbackRateForKey)
+
+        // Tilføj event.detail til logs-arrayet.
+        logs = [event.detail, ...logs];
+        if (logs.length > 10) {
+            logs = logs.slice(0, 10);
+        }
+    } */
+    /*  function noteOn(event) {
+        dispatch("noteon", event.detail);
+        pitch = event.detail;
+    } */
+
+    let idCounter = 0;
+
+ /*    function noteOn(event) {
+    dispatch("noteon", event.detail);
+
+    // Reset pitch først, så Svelte genkender en ændring hver gang
+    pitch = null;
+    pitch = event.detail;
+
+    noteLog = [{id: idCounter++, note: event.detail}, ...noteLog];
+    if (noteLog.length > 10) {
+        noteLog = noteLog.slice(0, 10);
     }
+}
+ */
+ function noteOn(event) {
+    dispatch("noteon", event.detail);
+    pitch = null; // reset pitch
+    // Use nextTick to ensure that the resetting of the pitch is registered
+    tick().then(() => {
+        pitch = event.detail;
+        noteLog = [{id: idCounter++, note: event.detail}, ...noteLog];
+        if (noteLog.length > 10) {
+            noteLog = noteLog.slice(0, 10);
+        }
+    });
+}
+
 
     function noteOff(event) {
         dispatch("noteoff", event.detail);
+    }
+
+    async function handlePlay() {
+        for (let note of noteLog) {
+            new playNoteSound(note);
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+    }
+
+    function handleFunction() {
+        console.log("Function button pressed");
+        noteLog = [];
     }
 </script>
 
 <div class="keyboard">
     <div>
         {#each keys as note}
-            <Key noteNum={note} on:noteon={noteOn} on:noteoff={noteOff} pressed={keysPressed.includes(note)}/>
+            <Key
+                noteNum={note}
+                on:noteon={noteOn}
+                on:noteoff={noteOff}
+                pressed={keysPressed.includes(note)}
+            />
         {/each}
     </div>
 </div>
+<Player {pitch} />
+<!-- Log visning -->
+<div class="container">
+    <h2>Note Log:</h2>
+    {#each noteLog as note (note.id)}
+        <p class="item">{note.note}</p>   
+    {/each}
+</div>
 
+<!-- Knapper -->
+<div>
+    <button class="green-button" on:click={handlePlay}>Play</button>
+    <button class="blue-button" on:click={handleFunction}>Call Function</button>
+</div>
 
 <style>
     .keyboard {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
     }
     .keyboard > div {
         display: flex;
         overflow: auto;
         padding: 8px;
         height: 192px;
+    }
+    /*  .controls {
+        margin-top: 20px;
+    }
+    input {
+        margin-right: 10px;
+    } */
+
+    .green-button {
+        background-color: limegreen;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+
+    .blue-button {
+        background-color: dodgerblue;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .item {
+        width: 30px;
+        height: 30px;
+        margin: 5px;
     }
 </style>
