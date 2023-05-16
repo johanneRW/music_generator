@@ -14,6 +14,7 @@
     "vite": "^4.2.0"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.5.0",
     "base-url": "^1.0.0",
     "jquery": "^3.6.4",
     "svelte-navigator": "^3.2.2",

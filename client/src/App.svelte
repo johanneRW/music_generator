@@ -6,7 +6,7 @@
   import { onMount } from "svelte"
   import AuthGuard from "./guards/AuthGuard.svelte"
   import Keyboard from "./pages/piano/keyboard.svelte";
-  import Generator from "./pages/login/generator/generator.svelte"
+  import Generator from "./pages/generator/generator.svelte"
 
   function handleLogout() {
     logout()

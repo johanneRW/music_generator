@@ -3,18 +3,21 @@
     import { tick } from 'svelte';
     import { onMount } from "svelte";
     import Key from "../piano/key.svelte";
-    import Player from "../../Player/player.svelte";
-    import playNoteSound from "../../Player/player.svelte";
+    import Player from "../Player/player.svelte";
+    import playNoteSound from "../Player/player.svelte";
 
     export let octaves = 2;
     export let middleC = 60;
     export let keysPressed = [];
+    
+    let generatedMelody = []
 
     let noteLog = [];
     $: {
   if (noteLog.length > 10) {
     noteLog.splice(0, 1);
   }
+
 }
 
 
@@ -25,104 +28,12 @@
 
     let pitch;
 
-    /*  const keyToPlaybackRate = {
-        48: 0.5,   // C3
-        49: 0.529, // C#3
-        50: 0.561, // D3
-        51: 0.595, // D#3
-        52: 0.63,  // E3
-        53: 0.667, // F3
-        54: 0.707, // F#3
-        55: 0.749, // G3
-        56: 0.793, // G#3
-        57: 0.84,  // A3
-        58: 0.891, // A#3
-        59: 0.944, // B3
-        60: 1.00,  // C4
-        61: 1.059, // C#4
-        62: 1.122, // D4
-        63: 1.189, // D#4
-        64: 1.26,  // E4
-        65: 1.335, // F4
-        66: 1.414, // F#4
-        67: 1.498, // G4
-        68: 1.587, // G#4
-        69: 1.682, // A4
-        70: 1.782, // A#4
-        71: 1.888, // B4
-        72: 2.00,  // C5
-        73: 2.118, // C#5
-        74: 2.245, // D5
-        75: 2.378, // D#5
-        76: 2.52,  // E5
-        77: 2.671, // F5
-        78: 2.828, // F#5
-        79: 2.997, // G5
-        80: 3.175, // G#5
-        81: 3.364, // A5
-        82: 3.564, // A#5
-        83: 3.776, // B5
-    }; */
 
     const dispatch = createEventDispatcher();
 
-    /*   let audioContext;
-    let buffer;
-  
-    onMount(async () => {
-      audioContext = new AudioContext();
-      const response = await fetch("/lyd2.wav");
-      const arrayBuffer = await response.arrayBuffer();
-      buffer = await audioContext.decodeAudioData(arrayBuffer);
-    });
-  
-    async function playSound(pitch) {
-      const source = audioContext.createBufferSource();
-      source.buffer = buffer;
-      source.playbackRate.value = pitch;
-      source.connect(audioContext.destination);
-      source.start(0);
-    } */
-
-    /* function noteOn(event) {
-        dispatch("noteon", event.detail);
-
-        const playbackRateForKey = keyToPlaybackRate[event.detail]
-        playSound(playbackRateForKey)
-    } */
-
-    /*   function noteOn(event) {
-        dispatch("noteon", event.detail);
-
-        const playbackRateForKey = keyToPlaybackRate[event.detail]
-        playSound(playbackRateForKey)
-
-        // Tilføj event.detail til logs-arrayet.
-        logs = [event.detail, ...logs];
-        if (logs.length > 10) {
-            logs = logs.slice(0, 10);
-        }
-    } */
-    /*  function noteOn(event) {
-        dispatch("noteon", event.detail);
-        pitch = event.detail;
-    } */
-
     let idCounter = 0;
 
- /*    function noteOn(event) {
-    dispatch("noteon", event.detail);
 
-    // Reset pitch først, så Svelte genkender en ændring hver gang
-    pitch = null;
-    pitch = event.detail;
-
-    noteLog = [{id: idCounter++, note: event.detail}, ...noteLog];
-    if (noteLog.length > 10) {
-        noteLog = noteLog.slice(0, 10);
-    }
-}
- */
  function noteOn(event) {
     dispatch("noteon", event.detail);
     pitch = null; // reset pitch
@@ -142,16 +53,88 @@
     }
 
     async function handlePlay() {
-        for (let note of noteLog) {
-            new playNoteSound(note);
-            await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-    }
+    let delay = 0;  // start delay at 0
+    const delayIncrement = 500; // delay between each note in milliseconds
 
-    function handleFunction() {
+    // Make a copy of noteLog and reverse it
+    let reversedNoteLog = [...noteLog].reverse();
+
+    // Go through each note in reversedNoteLog
+    reversedNoteLog.forEach((noteObj) => {
+        // Set timeout to play note after delay
+        setTimeout(() => {
+            pitch = null;
+            tick().then(() => {
+                pitch = noteObj.note;
+            });
+        }, delay);
+
+        // Increase delay for next note
+        delay += delayIncrement;
+    });
+}
+
+    function genrateResponse() {
         console.log("Function button pressed");
-        noteLog = [];
+       /*  fetch(
+            "http://localhost:5000/", 
+            { 
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(noteLog)
+            }
+        ).then(response => {
+
+            response.json().then(
+                data => { 
+                    generatedMelody = data
+
+                    let delay = 0;  // start delay at 0
+                    const delayIncrement = 500; // delay between each note in milliseconds
+
+                    data.forEach((val) => {
+                    // Set timeout to play note after delay
+                    setTimeout(() => {
+                        pitch = null;
+                        tick().then(() => {
+                            pitch = val
+                        });
+                    }, delay);
+
+                        // Increase delay for next note
+                        delay += delayIncrement;
+                    });
+                }
+            )
+        }) */
+        
+        generatedMelody = [23, 23, 44, 34, 34, 41, 44, 47, 38, 45, 42, 40, 34, 37, 45, 49, 46, 49, 45, 45, 47, 40, 40, 44, 50, 45, 52, 49, 45, 48, 48, 50, 50, 50, 50, 57, 54, 54, 59, 62, 71, 68, 70, 72, 82, 59, 71, 77, 73, 62]
+
+        let delay = 0;  // start delay at 0
+        const delayIncrement = 450; // delay between each note in milliseconds
+
+        generatedMelody.forEach((val) => {
+        // Set timeout to play note after delay
+        setTimeout(() => {
+            pitch = null;
+            tick().then(() => {
+               /*  if (val > 84)
+                    val -= 12
+                if (val < 48)
+                    val += 24 */
+                pitch = val
+            });
+        }, delay);
+
+            // Increase delay for next note
+            delay += delayIncrement;
+        });
     }
+    function clearNoteLog() {
+    noteLog = [];
+  }
+
+
 </script>
 
 <div class="keyboard">
@@ -170,15 +153,24 @@
 <!-- Log visning -->
 <div class="container">
     <h2>Note Log:</h2>
-    {#each noteLog as note (note.id)}
+    {#each [...noteLog].reverse() as note (note.id)}
         <p class="item">{note.note}</p>   
     {/each}
 </div>
 
+<div class="container">
+    {#each generatedMelody as note}
+        <p class="item">{note}</p>   
+    {/each}
+</div>
+
+
 <!-- Knapper -->
 <div>
     <button class="green-button" on:click={handlePlay}>Play</button>
-    <button class="blue-button" on:click={handleFunction}>Call Function</button>
+    <button class="blue-button" on:click={genrateResponse}>Generate response</button>
+    <button class="red-button" on:click={clearNoteLog}>Clear Note Log</button>
+    <!-- <button class="red-button" on:click={stopPlaying}>Stop</button> -->
 </div>
 
 <style>
@@ -201,7 +193,19 @@
     } */
 
     .green-button {
-        background-color: limegreen;
+        background-color: rgb(40, 188, 40);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+    .red-button {
+        background-color: rgb(227, 18, 18);
         color: white;
         border: none;
         padding: 10px 20px;
@@ -214,7 +218,7 @@
     }
 
     .blue-button {
-        background-color: dodgerblue;
+        background-color: rgb(30, 127, 224);
         color: white;
         border: none;
         padding: 10px 20px;
