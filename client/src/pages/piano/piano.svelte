@@ -1,12 +1,30 @@
 <script>
     import Keyboard from "../../Keyboard/keyboard.svelte";
-    import NoteLog from "../../NoteLog/NoteLog.svelte";
-    import PlayerControl from "../../PlayerControl/PlayerControl.svelte";
+    import UserNoteLog from "../../NoteLog/UserNoteLog.svelte";
+    import PlayUserMelodyButton from "../../PlayerControl/PlayUserMelodyButton.svelte";
+    import SaveButton from "../../PlayerControl/SaveButton.svelte";
+    import StopButton from "../../PlayerControl/StopButton.svelte";
+    import ClearNoteLogButton from "../../PlayerControl/ClearNoteLogButton.svelte";
+
 
     let noteLimit = 100;
 </script>
-<div class="keyboard">
+<div>
     <Keyboard bind:noteLimit={noteLimit}/>
-    <NoteLog/>
-    <PlayerControl/>
+    <UserNoteLog/>
+    <div class="buttonsRow">
+    <PlayUserMelodyButton/>
+    <SaveButton/>
+    <StopButton/>
+    <ClearNoteLogButton/>
+    </div>
+
 </div>
+
+<style>
+
+    .buttonsRow{
+        display: flex;
+    }
+
+</style>

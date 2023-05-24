@@ -1,5 +1,5 @@
-import { writable } from "svelte/store"
-import { get } from "svelte/store"
+import {writable} from "svelte/store"
+import {get} from "svelte/store"
 import {tick} from "svelte";
 
 const keyToPlaybackRate = {
@@ -35,7 +35,7 @@ let buffer
 let isReady = false
 let intervalId
 
-async function initAudio(){
+async function initAudio() {
     audioContext = new AudioContext();
     const response = await fetch("/lyd2.wav");
     const arrayBuffer = await response.arrayBuffer();
@@ -47,7 +47,10 @@ async function playMelody(melody, position) {
     position.set(-1)
     const delayIncrement = 500
     intervalId = setInterval(async () => {
-        position.update((value) => { value++; return value })
+        position.update((value) => {
+            value++;
+            return value
+        })
         if (get(position) < melody.length) {
             await tick();
             let note = melody[get(position)];
@@ -58,6 +61,29 @@ async function playMelody(melody, position) {
         }
     }, delayIncrement);
 }
+
+//alternativ til playMelody, der benytter en setTimeout i stedet for interval potentielt en løsning på at melodien bliver langsommere og langsommere, skal testes med NNMelody for at kunne afgøre det.
+/*
+async function playMelody(melody, position) {
+    position.set(-1)
+    const delayIncrement = 500
+
+    async function playNextNote() {
+        position.update(value => value + 1);
+
+        if (get(position) < melody.length) {
+            await tick();
+            let note = melody[get(position)];
+            await playNote(note);
+            setTimeout(playNextNote, delayIncrement);
+        } else {
+            stopPlaying();
+            position.set(-1)
+        }
+    }
+    playNextNote();
+}*/
+
 
 //I musikteori er dette kendt som at "folde" toner inden for en bestemt oktav.
 function foldNoteIntoInterval(note, min, max) {
@@ -74,6 +100,7 @@ function foldNoteIntoInterval(note, min, max) {
 export const userMelody = writable([])
 export const userMelodyPosition = writable(-1)
 export const nnMelody = writable([])
+export const nnMelodyPosition = writable(-1)
 
 export const addNote = (note, noteLimit) => {
     userMelody.update(items => {
@@ -114,7 +141,7 @@ export async function playUserMelody() {
 }
 
 export async function playNNMelody() {
-    await playMelody(get(nnMelody))
+    await playMelody(get(nnMelody), nnMelodyPosition)
 }
 
 export function stopPlaying() {
