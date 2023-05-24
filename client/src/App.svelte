@@ -5,7 +5,7 @@
   import { checkIsLoggedIn, logout } from "./store/store.js"
   import { onMount } from "svelte"
   import AuthGuard from "./guards/AuthGuard.svelte"
-  import Keyboard from "./pages/piano/keyboard.svelte";
+  import Piano from "./pages/piano/piano.svelte";
   import Generator from "./pages/generator/generator.svelte"
 
   function handleLogout() {
@@ -16,16 +16,6 @@
     checkIsLoggedIn()
   })
 
-
-let logs = [];
-
-function noteOn(event) {
-    logs = [`Note ${event.detail} was pressed!`, ...logs];
-}
-
-function noteOff(event) {
-    logs = [`Note ${event.detail} was released!`, ...logs];
-}
 </script>
 
 <Router>
@@ -51,12 +41,7 @@ function noteOff(event) {
   </AuthGuard>
 
   <Route path="/">
-    
-<Keyboard octaves={2} on:noteon={noteOn} on:noteoff={noteOff} />
-
-<!-- {#each logs as log}
-    <div>{log}</div>
-{/each}<!-- <Keyboard/> --> 
+    <Piano />
   </Route>
   <Route path="/signup">
     <SignUp />
@@ -67,9 +52,6 @@ function noteOff(event) {
   <Route path="/generator" component={Generator} />
 </Router>
 <br>
-<!-- <svelte:head>
-    <title>Svelte Piano</title>
-</svelte:head> -->
 
 
 <style>

@@ -1,4 +1,6 @@
 <script>
+    // TODO: link til kilde
+
     export let noteNum;
     export let keyWidth = 56;
     export let pressed = false;
