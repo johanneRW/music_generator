@@ -2,14 +2,16 @@
     //TODO: lav funktion i store
 
 
+    import {addToArchive} from "../store/archiveStore.js";
+
     function saveMelody() {
-        // TODO: save funktion
+        addToArchive()
+            //TODO:tilføj funktionalitet
     }
 
 
 </script>
 
-<!-- Knapper -->
 <div>
 
     <button class="purple-button" on:click={saveMelody}>Save Melody</button>

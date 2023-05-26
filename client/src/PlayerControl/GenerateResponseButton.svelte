@@ -9,7 +9,6 @@
 
 </script>
 
-<!-- Knapper -->
 <div>
 
     <button class="blue-button" on:click={genrateResponse}>Generate response</button>

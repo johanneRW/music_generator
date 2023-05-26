@@ -8,6 +8,7 @@
     import Piano from "./pages/piano/piano.svelte";
     import Generator from "./pages/generator/generator.svelte"
     import Response from "./pages/response/response.svelte"
+    import Archive from "./pages/Archive/Archive.svelte";
 
 
     function handleLogout() {
@@ -24,7 +25,10 @@
     <AuthGuard>
         <div slot="authed">
             <nav>
+                <Link to="/generator">Music generator</Link>
+                <Link to="/response">Music Response</Link>
                 <Link to="/">Piano</Link>
+                <Link to ="/archive">Archive</Link>
                 <button id="logoutbutton" on:click={handleLogout}>Log out</button>
             </nav>
         </div>
@@ -46,6 +50,7 @@
     <Route path="/">
         <Piano/>
     </Route>
+    <Route path="/archive"/>
     <Route path="/signup">
         <SignUp/>
     </Route>

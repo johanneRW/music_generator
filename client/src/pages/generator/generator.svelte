@@ -4,7 +4,12 @@
     import PlayNNMelodyButton from "../../PlayerControl/PlayNNMelodyButton.svelte";
     import StopButton from "../../PlayerControl/StopButton.svelte";
     import SaveButton from "../../PlayerControl/SaveButton.svelte";
+    import {onDestroy} from "svelte";
+    import {clearNNMelody} from "../../store/playerStore.js";
 
+    onDestroy(()=>{
+        clearNNMelody()
+    })
 </script>
 
 <div>

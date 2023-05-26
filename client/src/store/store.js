@@ -6,6 +6,8 @@ const base_url = "http://localhost:8080"
 export const user = writable({ isLoggedIn: false })
 export const BASE_URL = readable(base_url)
 
+
+//TODO:tilføj logning af bruger id, til arkiv
 export const attemptLogin = async (username, password) => {
     const response = await fetch(base_url + '/login', {
         method: 'POST',
@@ -18,6 +20,7 @@ export const attemptLogin = async (username, password) => {
     return checkResponseStatus(response)
 }
 
+//TODO:tilføj logning af bruger id, til arkiv
 export const attemptSignup = async (username, password, email) => {
     const response = await fetch(base_url + '/signup', {
         method: 'POST',
@@ -47,20 +50,6 @@ export const checkIsLoggedIn = async () => {
         { credentials: 'include' },
     )
     checkResponseStatus(response)
-}
-
-export const loadDinos = async () => {
-    const response = await fetch(base_url + "/dinos", {
-        credentials: "include",
-    })
-    const doc = await response.json()
-    return doc.data
-}
-
-export const updateVote = (id) => {
-    return fetch(base_url + `/dinos/${id}/vote`, {
-        method: "POST",
-    })
 }
 
 function checkResponseStatus(response) {

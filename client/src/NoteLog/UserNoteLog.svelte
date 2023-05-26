@@ -1,5 +1,5 @@
 <script>
-    import {userMelody, userMelodyPosition} from "../store/playerStore.js";
+    import {getNoteName, userMelody, userMelodyPosition} from "../store/playerStore.js";
 </script>
 
 <!-- Log visning -->
@@ -7,7 +7,7 @@
     <h2>User Melody:</h2>
     <div class="melody">
     {#each $userMelody as note, index}
-        <p class:selected={$userMelodyPosition === index} class=item>{note}</p>
+        <p class:selected={$userMelodyPosition === index} class=item>{getNoteName(note)}</p>
     {/each}
     </div>
 </div>

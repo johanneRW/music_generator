@@ -5,9 +5,15 @@
     import SaveButton from "../../PlayerControl/SaveButton.svelte";
     import StopButton from "../../PlayerControl/StopButton.svelte";
     import ClearNoteLogButton from "../../PlayerControl/ClearNoteLogButton.svelte";
+    import {onDestroy} from "svelte";
+    import {clearNNMelody, clearUserMelody} from "../../store/playerStore.js";
 
 
     let noteLimit = 100;
+    onDestroy(()=>{
+        clearUserMelody()
+        clearNNMelody()
+    })
 </script>
 <div>
     <Keyboard bind:noteLimit={noteLimit}/>

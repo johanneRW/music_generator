@@ -7,7 +7,7 @@
     }
 </script>
 
-<!-- Knapper -->
+
 <div>
     <button class="red-button" on:click={clearNoteLog}>Clear Note Log</button>
 </div>

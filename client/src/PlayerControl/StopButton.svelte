@@ -3,7 +3,7 @@
 
 </script>
 
-<!-- Knapper -->
+
 <div>
     <button class="orange-button" on:click={stopPlaying}>Stop</button>
 </div>

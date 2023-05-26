@@ -7,7 +7,6 @@
 
 </script>
 
-<!-- Knapper -->
 <div>
     <button class="dark-green-button" on:click={handlePlay}>Play NN</button>
 
