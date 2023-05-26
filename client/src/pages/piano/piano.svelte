@@ -8,6 +8,7 @@
     import {onDestroy} from "svelte";
     import {clearNNMelody, clearUserMelody} from "../../store/playerStore.js";
     import DelaySlider from "../../PlayerControles/DelaySlider.svelte";
+    import Visulaizer from "../../Visulaizer.svelte";
 
 
     let noteLimit = 100;
@@ -19,6 +20,7 @@
 <div>
     <Keyboard bind:noteLimit={noteLimit}/>
     <UserNoteLog/>
+    <Visulaizer/>
     <div class="buttonsRow">
     <DelaySlider/>
     </div>

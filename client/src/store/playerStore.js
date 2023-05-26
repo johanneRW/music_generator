@@ -191,4 +191,4 @@ export function getNoteName(midi_number, min, max) {
 
     return note_name;
 }
-;
+

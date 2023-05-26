@@ -8,6 +8,7 @@
     import {clearNNMelody} from "../../store/playerStore.js";
     import TempratureSlider from "../../PlayerControles/TempratureSlider.svelte";
     import DelaySlider from "../../PlayerControles/DelaySlider.svelte";
+    import Visulaizer from "../../Visulaizer.svelte";
 
 
     onDestroy(()=>{
@@ -29,6 +30,7 @@
     <StopButton/>
     <SaveButton/>
     </div>
+    <Visulaizer/>
 </div>
 
 <style>
