@@ -1,4 +1,16 @@
 <script>
+    import Button from './Button.svelte';
+    import {playUserMelody} from "../store/playerStore.js";
+
+    async function handlePlay() {
+        await playUserMelody()
+    }
+</script>
+
+<Button color="green" handleClick={handlePlay}>Play</Button>
+
+<!--
+<script>
     import {playUserMelody} from "../store/playerStore.js";
 
     async function handlePlay() {
@@ -26,4 +38,4 @@
         margin: 4px 2px;
         cursor: pointer;
     }
-</style>
+</style>-->

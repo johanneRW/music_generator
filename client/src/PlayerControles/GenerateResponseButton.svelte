@@ -1,9 +1,18 @@
 <script>
+    import Button from './Button.svelte';
     //TODO: lav funktion i store eller i NN klasse?
 
-
-    function genrateMelody() {
+    function genrateResponse() {
         // TODO: get NN melody from store
+    }
+</script>
+
+<Button color="blue" handleClick={genrateResponse}>Generate response</Button>
+
+<!--script>
+
+    function genrateResponse() {
+
     }
 
 
@@ -11,7 +20,7 @@
 
 <div>
 
-    <button class="blue-button" on:click={genrateMelody}>Generate response</button>
+    <button class="blue-button" on:click={genrateResponse}>Generate response</button>
 
 </div>
 
@@ -29,4 +38,4 @@
         margin: 4px 2px;
         cursor: pointer;
     }
-</style>
+</style>-->

@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "@tensorflow/tfjs-converter": "^4.6.0",
+        "@tensorflow/tfjs-node": "^4.6.0",
         "base-url": "^1.0.0",
         "bcrypt": "^5.1.0",
         "body-parser": "^1.20.2",

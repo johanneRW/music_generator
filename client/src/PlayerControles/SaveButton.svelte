@@ -1,12 +1,24 @@
 <script>
-    //TODO: lav funktion i store
+    import Button from './Button.svelte';
+    import {addToArchive} from "../store/archiveStore.js";
 
+
+    function saveMelody() {
+        addToArchive()
+        //TODO:tilføj funktionalitet
+    }
+</script>
+
+<Button color="purple" handleClick={saveMelody}>Save Melody</Button>
+
+<!--
+<script>
 
     import {addToArchive} from "../store/archiveStore.js";
 
     function saveMelody() {
         addToArchive()
-            //TODO:tilføj funktionalitet
+
     }
 
 
@@ -32,4 +44,5 @@
         margin: 4px 2px;
         cursor: pointer;
     }
-</style>
+</style>-->
+

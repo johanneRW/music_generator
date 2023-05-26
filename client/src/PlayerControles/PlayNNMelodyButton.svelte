@@ -1,4 +1,16 @@
 <script>
+    import Button from './Button.svelte';
+    import { playNNMelody } from "../store/playerStore.js";
+
+    async function handlePlay() {
+        await playNNMelody()
+    }
+</script>
+
+<Button color="dark-green" handleClick={handlePlay}>Play NN</Button>
+
+<!--
+<script>
     import {playNNMelody} from "../store/playerStore.js";
 
     async function handlePlay() {
@@ -27,4 +39,4 @@
     }
 
 
-</style>
+</style>-->

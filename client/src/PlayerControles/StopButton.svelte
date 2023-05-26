@@ -1,4 +1,13 @@
 <script>
+    import Button from './Button.svelte';
+    import { stopPlaying } from "../store/playerStore.js";
+
+</script>
+
+<Button color="orange" handleClick={stopPlaying}>Stop</Button>
+
+<!--
+<script>
     import {stopPlaying} from "../store/playerStore.js";
 
 </script>
@@ -23,4 +32,4 @@
         cursor: pointer;
     }
 
-</style>
+</style>-->

@@ -4,10 +4,6 @@
     import {loadArchive} from "../../store/archiveStore.js";
     import AuthGuard from "../../guards/AuthGuard.svelte"
 
-    loadArchive()
-        //Todo:funktionalitet der kalder arkiv
-
-
 
     let archiveItems = [];
 
@@ -40,6 +36,7 @@
                 {/each}
             </ul>
         {/if}
+
     {:else}
         <p>You are not logged in. Please log in to view your archive.</p>
     {/if}

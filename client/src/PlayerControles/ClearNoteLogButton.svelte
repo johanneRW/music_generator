@@ -1,4 +1,16 @@
 <script>
+    import Button from './Button.svelte';
+    import {clearUserMelody} from "../store/playerStore.js";
+
+    function clearNoteLog() {
+        clearUserMelody()
+    }
+</script>
+
+<Button color="red" handleClick={clearNoteLog}>Clear Note Log</Button>
+
+<!--
+<script>
     import {clearUserMelody} from "../store/playerStore.js";
 
 
@@ -25,4 +37,4 @@
         margin: 4px 2px;
         cursor: pointer;
     }
-</style>
+</style>-->
