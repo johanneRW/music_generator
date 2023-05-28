@@ -1,4 +1,5 @@
 <script>
+
     import Keyboard from "../../Keyboard/keyboard.svelte";
     import NNNoteLog from "../../NoteLog/NNNoteLog.svelte";
     import PlayUserMelodyButton from "../../PlayerControles/PlayUserMelodyButton.svelte";
@@ -6,14 +7,15 @@
     import ClearNoteLogButton from "../../PlayerControles/ClearNoteLogButton.svelte";
     import GenerateResponseButton from "../../PlayerControles/GenerateResponseButton.svelte";
     import PlayNNMelodyButton from "../../PlayerControles/PlayNNMelodyButton.svelte";
-    import SaveButton from "../../PlayerControles/SaveButton.svelte";
     import UserNoteLog from "../../NoteLog/UserNoteLog.svelte";
     import {onDestroy} from "svelte";
     import {clearNNMelody, clearUserMelody} from "../../store/playerStore.js";
-    import DelaySlider from "../../PlayerControles/DelaySlider.svelte";
-    import TempratureSlider from "../../PlayerControles/TempratureSlider.svelte";
+    import UserDelaySlider from "../../PlayerControles/UserDelaySlider.svelte";
+    import NNDelaySlider from "../../PlayerControles/NNDelaySlider.svelte";
+    import NNSaveButton from "../../PlayerControles/NNSaveButton.svelte";
 
     let noteLimit = 10;
+
     onDestroy(()=>{
         clearUserMelody()
         clearNNMelody()
@@ -23,10 +25,10 @@
     <Keyboard bind:noteLimit={noteLimit}/>
 
     <UserNoteLog/>
-    <div class="buttonsRow">
-    <DelaySlider/>
+    <div class="row">
+    <UserDelaySlider/>
     </div>
-    <div class="buttonsRow">
+    <div class="row">
         <PlayUserMelodyButton/>
         <StopButton/>
         <ClearNoteLogButton/>
@@ -34,25 +36,21 @@
 <br>
     <br>
     <GenerateResponseButton/>
-    <div class="buttonsRow">
-        <TempratureSlider/>
-        <DelaySlider/>
+    <div class="row">
+        <NNDelaySlider/>
     </div>
 
     <NNNoteLog/>
-    <div class="buttonsRow">
+    <div class="row">
         <PlayNNMelodyButton/>
         <StopButton/>
-        <SaveButton/>
+        <NNSaveButton/>
     </div>
 </div>
 
-
 <style>
-
-    .buttonsRow {
+    .row {
         display: flex;
         /*justify-content: space-between;*/
     }
-
 </style>

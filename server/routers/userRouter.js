@@ -62,17 +62,28 @@ router.post("/login", async (req, res) => {
     const isSame = await bcrypt.compare(req.body.password, hashedPassword)
 
     if (isSame) {
-        console.log("success")
         req.session.isAuth = true
-        //res.sendStatus(200)
         req.session.userId = data[0].id // Store user id in the session
-        req.session.save()
-        res.sendStatus(200)
+        //req.session.save()
+        //res.status(200).send({ userId: userId })
+
+        req.session.save(err => {
+            if (err) {
+                // Handle error
+                console.log(err);
+                res.status(500).send({message: 'Internal server error'});
+            } else {
+                res.status(200).send({ userId: userId });
+                console.log("success");
+            }
+        });
+        console.log("success")
+
     } else {
         console.log("login failure")
         req.session.isAuth = false
         req.session.save()
-        res.sendStatus(403)
+        res.status(403).send({})
     }
 })
 
@@ -84,9 +95,9 @@ router.post("/logout", (req, res) => {
 
 router.get("/isloggedin", (req, res) => {
     if (req.session.isAuth) {
-        res.sendStatus(200)
+        res.status(200).send({ userId: req.session.userId })
     } else {
-        res.sendStatus(403)
+        res.status(403).send({})
     }
 })
 

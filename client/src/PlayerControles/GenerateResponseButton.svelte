@@ -1,41 +1,118 @@
+<!--
 <script>
     import Button from './Button.svelte';
-    //TODO: lav funktion i store eller i NN klasse?
+    import {isPlaying, nnMelody, userMelody} from "../store/playerStore.js";
+    import {get} from "svelte/store";
+    import {generateMelody} from "../store/NNStore.js";
+    import {onMount} from "svelte";
+    import * as tf from "@tensorflow/tfjs";
+
+    let model
+    let isDisabled = false
+
+    $: isDisabled = (isDisabled);
+
+    onMount(async () => {
+        model = await tf.loadLayersModel("model.json");
+    })
 
     function genrateResponse() {
-        // TODO: get NN melody from store
+        // Generate melody based on user input
+        isDisabled = true
+        let userInput = get(userMelody)
+        while (userInput.length < 50) {
+            userInput.push(0);  // Tilføj 0 (eller en anden "dummy"-værdi) indtil længden er 50
+        }
+        generateMelody(model, userInput).then(
+            melody => {
+                nnMelody.set(melody)
+                isDisabled = false
+            }
+        );
+    }
+</script>
+<p>isDisabled: {isDisabled}</p>
+<Button disabled={isDisabled} color="blue" handleClick={genrateResponse}>Generate response</Button>
+-->
+<!--
+<script>
+    import Button from './Button.svelte';
+    import {isPlaying, nnMelody, userMelody} from "../store/playerStore.js";
+    import {get} from "svelte/store";
+    import {generateMelody, nnIsWorking} from "../store/NNStore.js";
+    import {onMount} from "svelte";
+    import * as tf from "@tensorflow/tfjs";
+
+    let model
+    let isDisabled = false;
+    $: isDisabled = $nnIsWorking
+
+    onMount(async () => {
+        model = await tf.loadLayersModel("model.json");
+    })
+
+    function genrateResponse() {
+        // Generate melody based on user input
+        let userInput = get(userMelody)
+        while (userInput.length < 50) {
+            userInput.push(0);  // Tilføj 0 (eller en anden "dummy"-værdi) indtil længden er 50
+        }
+        generateMelody(model, userInput).then(
+            melody => {
+                nnMelody.set(melody)
+            }
+        );
     }
 </script>
 
-<Button color="blue" handleClick={genrateResponse}>Generate response</Button>
+<p>nnIsWorking: {$nnIsWorking}</p>
+<Button disabled={isDisabled} color="blue" handleClick={genrateResponse}>Generate response</Button>
+-->
+<script>
+    import Button from './Button.svelte';
+    import {nnMelody, userMelody} from "../store/playerStore.js";
+    import {get} from "svelte/store";
+    import {generateMelody, temperature} from "../store/NNStore.js";
+    import {onMount} from "svelte";
+    import * as tf from "@tensorflow/tfjs";
+    import {tick} from 'svelte';
+    import Slider from "./Slider.svelte";
 
-<!--script>
+    let model
+    let isDisabled = false;
 
-    function genrateResponse() {
+    onMount(async () => {
+        model = await tf.loadLayersModel("model.json");
+    })
 
+
+    //This is kind of a hack but everything else didn't work for me
+    async function handleResponseFunction() {
+        isDisabled = true;
+        await tick(); // Update DOM before generating melody
+        setTimeout(async () => {
+            await generateResponse();
+            isDisabled = false;
+            await tick(); // Update DOM after generating melody
+        }, 50); // Delay of 50 milliseconds
     }
 
 
+    async function generateResponse() {
+        // Generate melody based on user input
+        let userInput = get(userMelody);
+        while (userInput.length < 50) {
+            userInput.push(0);  // Add 0 (or any other "dummy" value) until the length is 50
+        }
+        await generateMelody(model, userInput).then(
+            melody => {
+                nnMelody.set(melody);
+            }
+        );
+    }
 </script>
 
-<div>
+<p>Temperature: {$temperature}</p>
+<Slider disabled={isDisabled} bind:value={$temperature} min={0} max={2} step={0.1} default_value={1} />
 
-    <button class="blue-button" on:click={genrateResponse}>Generate response</button>
-
-</div>
-
-<style>
-
-    .blue-button {
-        background-color: rgb(30, 127, 224);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-    }
-</style>-->
+<Button disabled={isDisabled} color="blue" handleClick={handleResponseFunction}>Generate response</Button>

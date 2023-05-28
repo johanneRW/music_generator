@@ -1,26 +1,44 @@
-import {derived, get, writable} from "svelte/store";
-import {userMelody, userMelodyPosition} from "./playerStore.js";
+import {get, writable} from "svelte/store";
+import {foldNoteIntoInterval, nnMelody, nnMelodyPosition} from "./playerStore.js";
 
 const noteMin = 48;  // C3
 const noteMax = 72;  // C5
 
-function randomPosition() {
+/*function randomPosition() {
     return Math.floor(Math.random() * 100);  // Return a random position between 0 and 100
+}*/
+
+function randomPosition() {
+    return Math.floor(Math.random() * 60) + 20;  // Return a random position between 20 and 80
 }
 
 function noteToSize(note) {
-    return ((note - noteMin) / (noteMax - noteMin) * 20) + 10;  // Map note value to a size between 10 and 30
+    return ((note- noteMin) / (noteMax - noteMin) * 40) + 20;  // Map note value to a size between 20 and 60
 }
+
+
+/*function noteToColor(note) {
+    const normalizedNote = (note - noteMin) / (noteMax - noteMin);  // Normalize note value between 0 and 1
+    const r = Math.floor(normalizedNote * 255);
+    const g = Math.floor((1 - normalizedNote) * 255);
+    const b = Math.floor(Math.abs(normalizedNote - 0.5) * 255);
+    return `${r}, ${g}, ${b}`;
+}*/
 
 function noteToColor(note) {
-    let colorValue = ((note - noteMin) / (noteMax - noteMin) * 255);  // Map note value to a color between 0 and 255
-    return `hsl(${colorValue}, 100%, 50%)`;  // Convert the color value to a HSL color string
+    const normalizedNote = (note - noteMin) / (noteMax - noteMin);  // Normalize note value between 0 and 1
+    const r = Math.floor(128 * Math.sin(normalizedNote * 2 * Math.PI) + 128);
+    const g = Math.floor(128 * Math.sin(normalizedNote * 2 * Math.PI + 2/3 * Math.PI) + 128);
+    const b = Math.floor(128 * Math.sin(normalizedNote * 2 * Math.PI + 4/3 * Math.PI) + 128);
+    return `${r}, ${g}, ${b}`;
 }
+
+
 export const bubbles = writable([]);
 
-userMelodyPosition.subscribe($position => {
+nnMelodyPosition.subscribe($position => {
     if ($position >= 0) { // Check if a valid position
-        const note = get(userMelody)[$position];
+        const note = get(nnMelody)[$position];
         bubbles.update($bubbles => {
             return [...$bubbles, {
                 id: $position,
@@ -32,22 +50,3 @@ userMelodyPosition.subscribe($position => {
     }
 });
 
-/*
-
-export const bubbles = derived(
-    userMelody,
-    $userMelody => {
-        let bubbles = [];
-        for(let i=0; i<$userMelody.length; i++) {
-            let note = $userMelody[i];
-            let bubble = {
-                id: i,
-                position: randomPosition(),
-                size: noteToSize(note),
-                color: noteToColor(note)
-            };
-            bubbles.push(bubble);
-        }
-        return bubbles
-    }
-);*/

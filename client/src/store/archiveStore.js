@@ -10,10 +10,15 @@ export const loadArchive = async () => {
     }
 
     const doc = await response.json();
-    return doc.data;
+    return doc
 };
 
-export const addToArchive = async (item) => {
+export const addToArchive = async (melody) => {
+    // Construct item to send to server
+    let item = {
+        melody: melody
+    }
+
     // Create a date object for the current date and time
     const now = new Date();
 
@@ -48,3 +53,5 @@ export const addToArchive = async (item) => {
 };
 
 //TODO: mangler en load funktion og tilhørende knap
+//TODO: slet melodi fra arkiv
+//TODO: skal man kunne opdater

@@ -2,14 +2,13 @@
     import Keyboard from "../../Keyboard/keyboard.svelte";
     import UserNoteLog from "../../NoteLog/UserNoteLog.svelte";
     import PlayUserMelodyButton from "../../PlayerControles/PlayUserMelodyButton.svelte";
-    import SaveButton from "../../PlayerControles/SaveButton.svelte";
+    import SaveButton from "../../PlayerControles/NNSaveButton.svelte";
     import StopButton from "../../PlayerControles/StopButton.svelte";
     import ClearNoteLogButton from "../../PlayerControles/ClearNoteLogButton.svelte";
     import {onDestroy} from "svelte";
     import {clearNNMelody, clearUserMelody} from "../../store/playerStore.js";
-    import DelaySlider from "../../PlayerControles/DelaySlider.svelte";
-    import Visulaizer from "../../Visulaizer.svelte";
-
+    import UserDelaySlider from "../../PlayerControles/UserDelaySlider.svelte";
+    import UserSaveButton from "../../PlayerControles/UserSaveButton.svelte";
 
     let noteLimit = 100;
     onDestroy(()=>{
@@ -20,13 +19,12 @@
 <div>
     <Keyboard bind:noteLimit={noteLimit}/>
     <UserNoteLog/>
-    <Visulaizer/>
-    <div class="buttonsRow">
-    <DelaySlider/>
+    <div class="row">
+    <UserDelaySlider/>
     </div>
-    <div class="buttonsRow">
+    <div class="row">
     <PlayUserMelodyButton/>
-    <SaveButton/>
+    <UserSaveButton/>
     <StopButton/>
     <ClearNoteLogButton/>
     </div>
@@ -35,7 +33,7 @@
 
 <style>
 
-    .buttonsRow{
+    .row{
         display: flex;
     }
 

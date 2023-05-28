@@ -30,6 +30,8 @@ const keyToPlaybackRate = {
     72: 2.0, // C5
 }
 
+const minNote = 48
+const maxNote = 72
 const pitch_to_note_dict = {
     48: "C3",
     49: "C#3",
@@ -58,7 +60,6 @@ const pitch_to_note_dict = {
     72: "C5"
 }
 
-
 let audioContext
 let buffer
 let isReady = false
@@ -72,9 +73,9 @@ async function initAudio() {
     isReady = true;
 }
 
-async function playMelody(melody, position) {
+async function playMelody(melody, position, delay) {
+    isPlaying.set(true)
     position.set(-1)
-    const delayIncrement = 500
     intervalId = setInterval(async () => {
         position.update((value) => {
             value++;
@@ -88,7 +89,7 @@ async function playMelody(melody, position) {
             stopPlaying();
             position.set(-1)
         }
-    }, delayIncrement);
+    }, get(delay));
 }
 
 //alternativ til playMelody, der benytter en setTimeout i stedet for interval potentielt en løsning på at melodien bliver langsommere og langsommere, skal testes med NNMelody for at kunne afgøre det.
@@ -115,12 +116,12 @@ async function playMelody(melody, position) {
 
 
 //I musikteori er dette kendt som at "folde" toner inden for en bestemt oktav.
-function foldNoteIntoInterval(note, min, max) {
-    let interval_size = max - min + 1;
-    while (note < min) {
+export function foldNoteIntoInterval(note) {
+    let interval_size = maxNote - minNote + 1;
+    while (note < minNote) {
         note += interval_size;
     }
-    while (note > max) {
+    while (note > maxNote) {
         note -= interval_size;
     }
     return note;
@@ -128,8 +129,13 @@ function foldNoteIntoInterval(note, min, max) {
 
 export const userMelody = writable([])
 export const userMelodyPosition = writable(-1)
+export const userDelay = writable(500);
+
 export const nnMelody = writable([])
 export const nnMelodyPosition = writable(-1)
+export const nnDelay = writable(500);
+
+export const isPlaying=writable(false)
 
 export const addNote = (note, noteLimit) => {
     userMelody.update(items => {
@@ -158,7 +164,7 @@ export const clearNNMelody = () => {
 }
 
 export async function playNote(pitch) {
-    let foldedPitch = foldNoteIntoInterval(pitch, 48, 72);
+   // let foldedPitch = foldNoteIntoInterval(pitch, minNote, maxNote);
 
     if (!isReady) {
         await initAudio()
@@ -166,29 +172,31 @@ export async function playNote(pitch) {
 
     const source = audioContext.createBufferSource();
     source.buffer = buffer;
-    source.playbackRate.value = keyToPlaybackRate[foldedPitch];
+    //source.playbackRate.value = keyToPlaybackRate[foldedPitch];
+    source.playbackRate.value = keyToPlaybackRate[pitch];
     source.connect(audioContext.destination);
     source.start(0);
 }
 
 export async function playUserMelody() {
-    await playMelody(get(userMelody), userMelodyPosition)
+    await playMelody(get(userMelody), userMelodyPosition, userDelay)
 }
 
 export async function playNNMelody() {
-    await playMelody(get(nnMelody), nnMelodyPosition)
+    await playMelody(get(nnMelody), nnMelodyPosition, nnDelay)
 }
 
 export function stopPlaying() {
     clearInterval(intervalId);
+    isPlaying.set(false)
 }
 
-export function getNoteName(midi_number, min, max) {
+export function getNoteName(midi_number) {
     // Adjust the MIDI number to be within the given interval
-    let adjusted_midi_number = foldNoteIntoInterval(midi_number, min, max);
+    //let adjusted_midi_number = foldNoteIntoInterval(midi_number, minNote, maxNote);
     // Look up the note name in the dictionary
-    let note_name = pitch_to_note_dict[adjusted_midi_number];
-
+    //let note_name = pitch_to_note_dict[adjusted_midi_number];
+    let note_name = pitch_to_note_dict[midi_number];
     return note_name;
 }
 

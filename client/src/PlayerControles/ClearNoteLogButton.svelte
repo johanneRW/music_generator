@@ -1,3 +1,4 @@
+<!--
 <script>
     import Button from './Button.svelte';
     import {clearUserMelody} from "../store/playerStore.js";
@@ -8,33 +9,39 @@
 </script>
 
 <Button color="red" handleClick={clearNoteLog}>Clear Note Log</Button>
-
+-->
 <!--
-<script>
-    import {clearUserMelody} from "../store/playerStore.js";
 
+<script>
+
+    import Button from './Button.svelte';
+    import {clearUserMelody, userMelody} from "../store/playerStore.js";
+
+    let isDisabled = true;
+
+    $: isDisabled = ($userMelody.length === 0);
 
     function clearNoteLog() {
         clearUserMelody()
     }
 </script>
 
+<Button color="red" handleClick={clearNoteLog} disabled={isDisabled}>Clear Note Log</Button>
+-->
 
-<div>
-    <button class="red-button" on:click={clearNoteLog}>Clear Note Log</button>
-</div>
+<script>
+    import Button from './Button.svelte';
+    import {clearUserMelody, userMelody} from "../store/playerStore.js";
 
-<style>
-    .red-button {
-        background-color: rgb(227, 18, 18);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
+    let isDisabled = true;
+
+    $: isDisabled = ($userMelody.length === 0);
+
+    function clearNoteLog() {
+        clearUserMelody()
     }
-</style>-->
+</script>
+
+<Button disabled={isDisabled} color="red" handleClick={clearNoteLog}>Clear Note Log</Button>
+
+

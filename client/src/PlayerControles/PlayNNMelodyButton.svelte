@@ -1,3 +1,4 @@
+<!--
 <script>
     import Button from './Button.svelte';
     import { playNNMelody } from "../store/playerStore.js";
@@ -9,34 +10,18 @@
 
 <Button color="dark-green" handleClick={handlePlay}>Play NN</Button>
 
-<!--
+-->
 <script>
-    import {playNNMelody} from "../store/playerStore.js";
+    import Button from './Button.svelte';
+    import {playNNMelody, nnMelody, isPlaying} from "../store/playerStore.js";
+
+    let isDisabled = true;
+
+    $: isDisabled = ($nnMelody.length === 0||$isPlaying);
 
     async function handlePlay() {
         await playNNMelody()
     }
-
 </script>
 
-<div>
-    <button class="dark-green-button" on:click={handlePlay}>Play NN</button>
-
-</div>
-
-<style>
-    .dark-green-button {
-        background-color: rgb(11, 108, 11);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-    }
-
-
-</style>-->
+<Button disabled={isDisabled} color="dark-green" handleClick={handlePlay}>Play NN</Button>

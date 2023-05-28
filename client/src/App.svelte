@@ -50,7 +50,7 @@
     <Route path="/">
         <Piano/>
     </Route>
-    <Route path="/archive"/>
+    <Route path="/archive" component={Archive}/>
     <Route path="/signup">
         <SignUp/>
     </Route>

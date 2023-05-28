@@ -1,10 +1,22 @@
-<script>
+<!--<script>
     export let color = '';
     export let handleClick = () => {};
 </script>
 
 <button class="button {color}" on:click={handleClick}>
     <slot />
+</button>-->
+
+<!-- Button.svelte -->
+
+<script>
+    export let color = '';
+    export let handleClick = () => {};
+    export let disabled = false;
+</script>
+
+<button class="button {color}" on:click={handleClick} {disabled}>
+    <slot></slot>
 </button>
 
 <style>
@@ -18,6 +30,11 @@
         font-size: 16px;
         margin: 4px 2px;
         cursor: pointer;
+    }
+
+    .button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
     }
 
     .button.dark-green {

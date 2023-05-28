@@ -1,44 +1,38 @@
 <script>
     import Button from './Button.svelte';
-    //TODO: lav funktion i store eller i NN klasse?
+    import {onMount, tick} from "svelte";
+    import * as tf from "@tensorflow/tfjs";
+    import {nnMelody} from "../store/playerStore.js";
+    import {generateMelody, nVocab, temperature} from "../store/NNStore.js";
+    import Slider from "./Slider.svelte";
 
+    let model
+    let isDisabled = false;
+
+    onMount(async ()=>{
+        model = await tf.loadLayersModel("model.json");
+    })
+
+
+    //This is kind of a hack but everything else didn't work for me
+    async function handleGenerateFunction() {
+        isDisabled = true;
+        await tick(); // Update DOM before generating melody
+        setTimeout(async () => {
+            await genrateMelody() ;
+            isDisabled = false;
+            await tick(); // Update DOM after generating melody
+        }, 50); // Delay of 50 milliseconds
+    }
     function genrateMelody() {
-        // TODO: get NN melody from store
+        // Generate melody based on random seed
+        let randomSeed = Array.from({length: 50}, () => Math.floor(Math.random() * nVocab));
+        generateMelody(model, randomSeed).then(
+            melody => { nnMelody.set(melody) }
+        );
     }
 </script>
+<p>Temperature: {$temperature}</p>
+<Slider disabled={isDisabled} bind:value={$temperature} min={0} max={2} step={0.1} default_value={1} />
+<Button disabled={isDisabled} color="blue" handleClick={handleGenerateFunction}>Generate random melody</Button>
 
-<Button color="blue" handleClick={genrateMelody}>Generate response</Button>
-
-<!--
-<script>
-
-
-
-    function genrateMelody() {
-
-    }
-
-
-</script>
-
-<div>
-
-    <button class="blue-button" on:click={genrateMelody}>Generate response</button>
-
-</div>
-
-<style>
-
-    .blue-button {
-        background-color: rgb(30, 127, 224);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-    }
-</style>-->

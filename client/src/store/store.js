@@ -65,7 +65,7 @@ import { writable } from "svelte/store"
 
 const base_url = "http://localhost:8080"
 
-export const user = writable({ isLoggedIn: false, id: null })
+export const user = writable({ isLoggedIn: false, userId: null })
 export const BASE_URL = base_url
 
 export const attemptLogin = async (username, password) => {
@@ -100,7 +100,7 @@ export const logout = async () => {
             credentials: 'include'
         },
     )
-    user.update((value) => { value.isLoggedIn = false; value.id = null; return value; })
+    user.update((value) => { value.isLoggedIn = false; value.userId = null; return value; })
 }
 
 export const checkIsLoggedIn = async () => {
@@ -114,9 +114,9 @@ export const checkIsLoggedIn = async () => {
 async function handleResponse(response) {
     if (response.status === 200) {
         const data = await response.json();
-        user.update((value) => { value.isLoggedIn = true; value.id = data.id; return value; })
+        user.update((value) => { value.isLoggedIn = true; value.userId = data.userId; return value; })
     } else {
-        user.update((value) => { value.isLoggedIn = false; value.id = null; return value; })
+        user.update((value) => { value.isLoggedIn = false; value.userId = null; return value; })
     }
     return response.status
 }

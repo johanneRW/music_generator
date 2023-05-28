@@ -17,6 +17,7 @@
     "@tensorflow/tfjs": "^4.5.0",
     "base-url": "^1.0.0",
     "jquery": "^3.6.4",
+    "socket.io-client": "^4.6.1",
     "svelte-navigator": "^3.2.2",
     "svelte-toast": "^1.0.0",
     "toastr": "^2.1.4"
