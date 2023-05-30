@@ -1,15 +1,43 @@
 <script>
     import Keyboard from "../../Keyboard/keyboard.svelte";
-    import UserNoteLog from "../../NoteLog/UserNoteLog.svelte";
-    import PlayUserMelodyButton from "../../PlayerControles/PlayUserMelodyButton.svelte";
-    import SaveButton from "../../PlayerControles/NNSaveButton.svelte";
-    import StopButton from "../../PlayerControles/StopButton.svelte";
-    import ClearNoteLogButton from "../../PlayerControles/ClearNoteLogButton.svelte";
+    //import UserNoteLog from "../../NoteLog/UserNoteLog.svelte";
+    //import PlayUserMelodyButton from "../../PlayerControles/PlayUserMelodyButton.svelte";
+    //import SaveButton from "../../PlayerControles/NNSaveButton.svelte";
+    //import StopButton from "../../PlayerControles/StopButton.svelte";
+    //import ClearNoteLogButton from "../../PlayerControles/ClearNoteLogButton.svelte";
     import {onDestroy} from "svelte";
-    import {clearNNMelody, clearUserMelody} from "../../store/playerStore.js";
-    import UserDelaySlider from "../../PlayerControles/UserDelaySlider.svelte";
-    import UserSaveButton from "../../PlayerControles/UserSaveButton.svelte";
+    import {
+        clearNNMelody,
+        clearUserMelody, getNoteName, isPlaying, loadedDelay,
+        nnMelody,
+        nnMelodyPosition, playUserMelody, stopPlaying, userDelay,
+        userMelody,
+        userMelodyPosition
+    } from "../../store/playerStore.js";
+    //import UserDelaySlider from "../../PlayerControles/UserDelaySlider.svelte";
+    //import UserSaveButton from "../../PlayerControles/UserSaveButton.svelte";
+    //import NoteLog from "../../NoteLog/NoteLog.svelte";
+    import Button from "../../PlayerControles/Button.svelte";
+    import {addToArchive} from "../../store/archiveStore.js";
+    import {get} from "svelte/store";
+    import Slider from "../../PlayerControles/Slider.svelte";
+    import {user} from "../../store/store.js";
 
+    async function handlePlayUserMelody() {
+        await playUserMelody()
+    }
+    /*
+    let isDisabled = false;
+
+    $: isDisabled = ($userMelody.length === 0||$isPlaying);*/
+
+    function clearNoteLog() {
+        clearUserMelody()
+    }
+
+    function saveUserMelody() {
+        addToArchive(get(userMelody))
+    }
     let noteLimit = 100;
     onDestroy(()=>{
         clearUserMelody()
@@ -18,15 +46,30 @@
 </script>
 <div>
     <Keyboard bind:noteLimit={noteLimit}/>
-    <UserNoteLog/>
+ <!--<UserNoteLog/>-->
+    <div class="melodyContainer">
+        <h2>User Melody:</h2>
+        <div class="melody">
+            {#each $userMelody as note, index}
+                <p class:selected={$userMelodyPosition === index} class=item>{getNoteName(note)}</p>
+            {/each}
+        </div>
+    </div>
+
     <div class="row">
-    <UserDelaySlider/>
+    <!--<UserDelaySlider/>-->
+        <p>Delay: {$userDelay}</p>
+        <Slider disabled={($isPlaying)}  bind:value={$userDelay} min={0} max={700} step={50} default_value={500} />
     </div>
     <div class="row">
-    <PlayUserMelodyButton/>
-    <UserSaveButton/>
-    <StopButton/>
-    <ClearNoteLogButton/>
+    <!--<PlayUserMelodyButton/>-->
+        <Button disabled={($userMelody.length === 0||$isPlaying)} color="green" handleClick={handlePlayUserMelody}>Play</Button>
+    <!--<UserSaveButton/>-->
+        <Button disabled={($userMelody.length === 0||!$user.isLoggedIn)} color="purple" handleClick={saveUserMelody}>Save Melody</Button>
+        <!--<StopButton/>-->
+        <Button disabled={(!$isPlaying)} color="orange" handleClick={stopPlaying}>Stop</Button>
+    <!--<ClearNoteLogButton/>-->
+        <Button disabled={($userMelody.length === 0)} color="red" handleClick={clearNoteLog}>Clear Note Log</Button>
     </div>
 
 </div>
@@ -35,6 +78,32 @@
 
     .row{
         display: flex;
+    }
+
+    .melodyContainer {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .melody {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: left;
+    }
+
+
+
+    .item {
+        width: 30px;
+        height: 30px;
+        margin: 5px;
+        text-align: center;
+    }
+
+
+    .melodyContainer p.selected {
+        background-color: rgb(255, 206, 43);
+        border-radius: 20px;
     }
 
 </style>

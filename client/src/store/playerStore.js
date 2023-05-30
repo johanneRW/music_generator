@@ -92,10 +92,38 @@ async function initAudio() {
     }, get(delay));
 }*/
 
+async function playMelody(melody, position, delay) {
+    stopPlaying(); // Stop any previous melodies
+
+    isPlaying.set(true)
+    position.set(-1)
+
+    intervalId = setInterval(async () => {
+        position.update((value) => {
+            value++;
+            return value
+        })
+
+        if (get(position) < melody.length) {
+            await tick();
+            let note = melody[get(position)];
+            await playNote(note)
+        } else {
+            stopPlaying();
+            position.set(-1)
+        }
+    }, get(delay));
+}
+
 
 //alternativ til playMelody, der benytter en setTimeout i stedet for interval potentielt en løsning på at melodien bliver langsommere og langsommere, skal testes med NNMelody for at kunne afgøre det.
-let currentTimeout = null;
+/*let currentTimeout = null;
 async function playMelody(melody, position, delay) {
+    // If there is an ongoing playback, stop it first
+    if (get(isPlaying)) {
+        stopPlaying();
+    }
+
     let currentPosition = 0;
 
     async function playNoteAndAdvance() {
@@ -109,12 +137,11 @@ async function playMelody(melody, position, delay) {
         } else {
             stopPlaying();
             position.set(-1);
-            isPlaying.set(false);
         }
     }
 
     await playNoteAndAdvance();
-}
+}*/
 
 
 //I musikteori er dette kendt som at "folde" toner inden for en bestemt oktav.
@@ -136,6 +163,11 @@ export const userDelay = writable(500);
 export const nnMelody = writable([])
 export const nnMelodyPosition = writable(-1)
 export const nnDelay = writable(500);
+
+
+export const loadedMelody = writable([])
+export const loadedMelodyPosition = writable(-1)
+export const loadedDelay = writable(500);
 
 export const isPlaying=writable(false)
 
@@ -165,6 +197,12 @@ export const clearNNMelody = () => {
     })
 }
 
+export const clearLoadedMelody = () => {
+    loadedMelody.update(items => {
+        return []
+    })
+}
+
 export async function playNote(pitch) {
    // let foldedPitch = foldNoteIntoInterval(pitch, minNote, maxNote);
 
@@ -188,10 +226,23 @@ export async function playNNMelody() {
     await playMelody(get(nnMelody), nnMelodyPosition, nnDelay)
 }
 
+export async function playLoadedMelody() {
+    await playMelody(get(loadedMelody), loadedMelodyPosition, loadedDelay)
+}
+
 export function stopPlaying() {
-    //clearInterval(intervalId);
-    clearTimeout(currentTimeout);
-    isPlaying.set(false)
+    isPlaying.set(false);
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;  // Reset intervalId
+    }
+
+   /* if (currentTimeout) {
+        clearTimeout(currentTimeout);
+        currentTimeout = null;  // Reset currentTimeout
+    }*/
+
+
 }
 
 export function getNoteName(midi_number) {

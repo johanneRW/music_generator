@@ -105,6 +105,5 @@ dist
 
 .vscode/
 
-mandatory2.db
-
 .idea/
+/server/music.db

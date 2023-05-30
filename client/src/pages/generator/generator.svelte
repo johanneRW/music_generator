@@ -1,39 +1,142 @@
 <script>
-    import NNNoteLog from "../../NoteLog/NNNoteLog.svelte";
+    //import NNNoteLog from "../../NoteLog/NNNoteLog.svelte";
     import GenerateMelodyButton from "../../PlayerControles/GenerateMelodyButton.svelte";
-    import PlayNNMelodyButton from "../../PlayerControles/PlayNNMelodyButton.svelte";
-    import StopButton from "../../PlayerControles/StopButton.svelte";
-    import {onDestroy} from "svelte";
-    import {clearNNMelody} from "../../store/playerStore.js";
+    //import PlayNNMelodyButton from "../../PlayerControles/PlayNNMelodyButton.svelte";
+    //import StopButton from "../../PlayerControles/StopButton.svelte";
+    import {onDestroy, onMount, tick} from "svelte";
+    import {
+        clearNNMelody, getNoteName,
+        isPlaying, loadedDelay, nnDelay,
+        nnMelody,
+        nnMelodyPosition,
+        playNNMelody,
+        stopPlaying, userMelody
+    } from "../../store/playerStore.js";
     import Visualizer from "./Visualizer.svelte";
-    import NNDelaySlider from "../../PlayerControles/NNDelaySlider.svelte";
-    import NNSaveButton from "../../PlayerControles/NNSaveButton.svelte";
+    //import NNDelaySlider from "../../PlayerControles/NNDelaySlider.svelte";
+    //import NNSaveButton from "../../PlayerControles/NNSaveButton.svelte";
+    import Button from "../../PlayerControles/Button.svelte";
+    import {addToArchive} from "../../store/archiveStore.js";
+    import {get} from "svelte/store";
+    import {generateMelody, nVocab, temperature} from "../../store/NNStore.js";
+    import Slider from "../../PlayerControles/Slider.svelte";
+    import * as tf from "@tensorflow/tfjs";
+    import {socket} from "../../store/socketStore.js";
+    import {user} from "../../store/store.js";
 
-    onDestroy(()=>{
+
+    let model
+    let isDisabled = false;
+
+
+
+    onMount(async ()=>{
+        model = await tf.loadLayersModel("model.json");
+    })
+
+
+    //This is kind of a hack but everything else didn't work for me
+    async function handleGenerateFunction() {
+        isDisabled = true;
+        await tick(); // Update DOM before generating melody
+        setTimeout(async () => {
+            await genrateMelody() ;
+            isDisabled = false;
+            await tick(); // Update DOM after generating melody
+        }, 50); // Delay of 50 milliseconds
+    }
+    function genrateMelody() {
+        // Generate melody based on random seed
+        let randomSeed = Array.from({length: 50}, () => Math.floor(Math.random() * nVocab));
+        generateMelody(model, randomSeed).then(
+            melody => {
+                nnMelody.set(melody)
+                $socket.emit("newMelodyMessage", melody)
+                console.log("Sent message")
+            }
+        )
+    }
+    //TODO:sørg for at disable stadig fungere som det skal
+
+
+
+
+    function saveMelody() {
+        addToArchive(get(nnMelody))
+    }
+
+    async function handlePlay() {
+        await playNNMelody()
+    }
+
+    onDestroy(() => {
         clearNNMelody()
     })
+
 </script>
 
 <div>
     <div class="row">
-    <NNDelaySlider/>
-    </div>
-    <br>
-    <br>
-    <GenerateMelodyButton/>
-    <NNNoteLog/>
-    <div class="row">
-    <PlayNNMelodyButton/>
-    <StopButton/>
-    <NNSaveButton/>
-    </div>
-    <Visualizer/>
-</div>
+        <!--<NNDelaySlider/>-->
+        <p>Delay: {$nnDelay}</p>
+        <Slider disabled={($isPlaying||isDisabled)} bind:value={$nnDelay} min={0} max={700} step={50} default_value={500} />
 
+    </div>
+    <br>
+    <br>
+    <!--<GenerateMelodyButton/>-->
+    <p>Temperature: {$temperature}</p>
+    <Slider disabled={($isPlaying||isDisabled)} bind:value={$temperature} min={0} max={2} step={0.1} default_value={1} />
+    <Button disabled={isDisabled} color="blue" handleClick={handleGenerateFunction}>Generate random melody</Button>
+    <!--<NNNoteLog/>-->
+    <div class="melodyContainer">
+        <h2>Generated Melody:</h2>
+        <div class="melody">
+            {#each $nnMelody as note, index}
+                <p class:selected={$nnMelodyPosition === index} class=item>{getNoteName(note)}</p>
+            {/each}
+        </div>
+        </div>
+        <div class="row">
+            <!--<PlayNNMelodyButton/>-->
+            <Button disabled={($nnMelody.length === 0||$isPlaying)} color="dark-green" handleClick={handlePlay}>Play NN</Button>
+            <!-- <StopButton/>-->
+            <Button disabled={(!$isPlaying)} color="orange" handleClick={stopPlaying}>Stop</Button>
+            <!--<SaveNNMelodyButton/>-->
+            <Button disabled={($nnMelody.length === 0||!$user.isLoggedIn)} color="purple" handleClick={saveMelody}>Save NN Melody</Button>
+        </div>
+        <!--<Visualizer/>-->
+    <Visualizer/>
+
+</div>
 <style>
 
-    .row{
+    .row {
         display: flex;
     }
 
+    .melodyContainer {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .melody {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: left;
+    }
+
+
+    .item {
+        width: 30px;
+        height: 30px;
+        margin: 5px;
+        text-align: center;
+    }
+
+
+    .melodyContainer p.selected {
+        background-color: rgb(255, 206, 43);
+        border-radius: 20px;
+    }
 </style>

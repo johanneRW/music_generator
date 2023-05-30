@@ -12,7 +12,7 @@
     import Load from "./pages/load/load.svelte";
     import {socket} from "./store/socketStore.js";
     import toastr from "toastr"
-    import {nnMelody} from "./store/playerStore.js";
+    import {loadedMelody} from "./store/playerStore.js";
 
     function handleLogout() {
         logout()
@@ -24,10 +24,27 @@
 
     $socket.on("newMelodyMessage", (data) => {
         console.log("new melody", data)
-        nnMelody.set(data)
+        loadedMelody.set(data)
         toastr.info(
-            "En anden bruger har netop dannet en ny melodi. <a href='load'>Klik her for at høre den!</a>"
-        )
+            "En anden bruger har netop dannet en ny melodi. <a href='load'>Klik her for at høre den!</a>",
+//TODO: ryd ud i nogle af variablerne i toastr
+        {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        })
     });
 
 </script>

@@ -4,13 +4,14 @@
     import AuthGuard from "../../guards/AuthGuard.svelte"
     import Button from "../../PlayerControles/Button.svelte";
     import {navigate} from "svelte-navigator";
-    import {nnMelody} from "../../store/playerStore.js";
+    import {loadedMelody} from "../../store/playerStore.js";
 
     function loadMelody(melodyString) {
         try {
             let melodyArray = JSON.parse(melodyString);
-            nnMelody.set(melodyArray);
-            navigate('/load');
+            loadedMelody.set(melodyArray);
+            //navigate('/load');
+            navigate('/load', { state: { from: 'archive' }});
         } catch (error) {
             console.error('Failed to parse melody:', error);
         }
@@ -30,7 +31,7 @@
     }
 </script>
 
-<div class="container">
+<div class="archiveContainer">
     <AuthGuard>
         <div slot="authed">
             <h2>My Archive</h2>
@@ -39,14 +40,14 @@
             {:else}
                 <ul>
                     {#each $archiveItems as item, index (item.id)}
-                        <li>
+
                             <div>
                                 <h5>{item.timestamp}</h5>
                                 <p>{item.melody}</p>
                                 <Button color="purple" handleClick={() => loadMelody(item.melody)}>Load Melody</Button>
                                 <Button color="red" handleClick={() => deleteItem(item.id)}>Delete</Button>
                             </div>
-                        </li>
+
                     {/each}
                 </ul>
             {/if}
@@ -56,3 +57,7 @@
         </div>
     </AuthGuard>
 </div>
+
+
+<style>
+</style>

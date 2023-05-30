@@ -10,9 +10,10 @@
 <!-- Button.svelte -->
 
 <script>
-    export let color = '';
+     export let color = '';
     export let handleClick = () => {};
     export let disabled = false;
+
 </script>
 
 <button class="button {color}" on:click={handleClick} {disabled}>
@@ -48,7 +49,6 @@
 
     .button.purple{
         background-color: rgb(98, 22, 189);}
-
     .button.green{
         background-color: rgb(40, 188, 40);}
 
