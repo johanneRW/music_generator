@@ -9,7 +9,10 @@
     import Generator from "./pages/generator/generator.svelte"
     import Response from "./pages/response/response.svelte"
     import Archive from "./pages/Archive/Archive.svelte";
-
+    import Load from "./pages/load/load.svelte";
+    import {socket} from "./store/socketStore.js";
+    import toastr from "toastr"
+    import {nnMelody} from "./store/playerStore.js";
 
     function handleLogout() {
         logout()
@@ -18,6 +21,14 @@
     onMount(() => {
         checkIsLoggedIn()
     })
+
+    $socket.on("newMelodyMessage", (data) => {
+        console.log("new melody", data)
+        nnMelody.set(data)
+        toastr.info(
+            "En anden bruger har netop dannet en ny melodi. <a href='load'>Klik her for at høre den!</a>"
+        )
+    });
 
 </script>
 
@@ -59,6 +70,7 @@
     </Route>
     <Route path="/response" component={Response}/>
     <Route path="/generator" component={Generator}/>
+    <Route path="/load" component={Load}/>
 </Router>
 <br>
 

@@ -18,10 +18,11 @@
     import {addToArchive} from "../store/archiveStore.js";
     import {userMelody} from "../store/playerStore.js";
     import {get} from "svelte/store";
+    import {user} from "../store/store.js";
 
     let isDisabled = true;
 
-    $: isDisabled = ($userMelody.length === 0);
+    $: isDisabled = ($userMelody.length === 0||!$user.isLoggedIn);
 
     function saveMelody() {
         addToArchive(get(userMelody))

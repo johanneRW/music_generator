@@ -3,7 +3,6 @@
     import GenerateMelodyButton from "../../PlayerControles/GenerateMelodyButton.svelte";
     import PlayNNMelodyButton from "../../PlayerControles/PlayNNMelodyButton.svelte";
     import StopButton from "../../PlayerControles/StopButton.svelte";
-    import SaveButton from "../../PlayerControles/NNSaveButton.svelte";
     import {onDestroy} from "svelte";
     import {clearNNMelody} from "../../store/playerStore.js";
     import Visualizer from "./Visualizer.svelte";

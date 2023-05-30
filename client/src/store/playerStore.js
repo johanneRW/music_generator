@@ -73,7 +73,7 @@ async function initAudio() {
     isReady = true;
 }
 
-async function playMelody(melody, position, delay) {
+/*async function playMelody(melody, position, delay) {
     isPlaying.set(true)
     position.set(-1)
     intervalId = setInterval(async () => {
@@ -90,29 +90,31 @@ async function playMelody(melody, position, delay) {
             position.set(-1)
         }
     }, get(delay));
-}
+}*/
+
 
 //alternativ til playMelody, der benytter en setTimeout i stedet for interval potentielt en løsning på at melodien bliver langsommere og langsommere, skal testes med NNMelody for at kunne afgøre det.
-/*
-async function playMelody(melody, position) {
-    position.set(-1)
-    const delayIncrement = 500
+let currentTimeout = null;
+async function playMelody(melody, position, delay) {
+    let currentPosition = 0;
 
-    async function playNextNote() {
-        position.update(value => value + 1);
-
-        if (get(position) < melody.length) {
+    async function playNoteAndAdvance() {
+        isPlaying.set(true);
+        if (currentPosition < melody.length) {
+            position.set(currentPosition);
             await tick();
-            let note = melody[get(position)];
-            await playNote(note);
-            setTimeout(playNextNote, delayIncrement);
+            await playNote(melody[currentPosition]);
+            currentPosition++;
+            currentTimeout = setTimeout(playNoteAndAdvance, get(delay));
         } else {
             stopPlaying();
-            position.set(-1)
+            position.set(-1);
+            isPlaying.set(false);
         }
     }
-    playNextNote();
-}*/
+
+    await playNoteAndAdvance();
+}
 
 
 //I musikteori er dette kendt som at "folde" toner inden for en bestemt oktav.
@@ -187,7 +189,8 @@ export async function playNNMelody() {
 }
 
 export function stopPlaying() {
-    clearInterval(intervalId);
+    //clearInterval(intervalId);
+    clearTimeout(currentTimeout);
     isPlaying.set(false)
 }
 

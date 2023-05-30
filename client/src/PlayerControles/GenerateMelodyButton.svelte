@@ -5,6 +5,7 @@
     import {nnMelody} from "../store/playerStore.js";
     import {generateMelody, nVocab, temperature} from "../store/NNStore.js";
     import Slider from "./Slider.svelte";
+    import { socket } from "../store/socketStore.js"
 
     let model
     let isDisabled = false;
@@ -28,8 +29,12 @@
         // Generate melody based on random seed
         let randomSeed = Array.from({length: 50}, () => Math.floor(Math.random() * nVocab));
         generateMelody(model, randomSeed).then(
-            melody => { nnMelody.set(melody) }
-        );
+            melody => {
+                nnMelody.set(melody)
+                $socket.emit("newMelodyMessage", melody)
+                console.log("Sent message")
+            }
+        )
     }
 </script>
 <p>Temperature: {$temperature}</p>

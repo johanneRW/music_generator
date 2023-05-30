@@ -1,7 +1,12 @@
+import {get, writable} from "svelte/store";
+
 const base_url = "http://localhost:8080"
+export const archiveItems = writable([]);
+export const archiveLength = writable(0)
+
 
 export const loadArchive = async () => {
-    const response = await fetch(base_url +'/archive',{
+    const response = await fetch(base_url + '/archive', {
         credentials: "include",
     });
 
@@ -10,7 +15,8 @@ export const loadArchive = async () => {
     }
 
     const doc = await response.json();
-    return doc
+    archiveItems.set(doc);
+    archiveLength.set(doc.length)
 };
 
 export const addToArchive = async (melody) => {
@@ -29,6 +35,7 @@ export const addToArchive = async (melody) => {
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
+        second: '2-digit',
     });
 
     // Add the timestamp to the item
@@ -52,6 +59,23 @@ export const addToArchive = async (melody) => {
     return updatedItem;
 };
 
-//TODO: mangler en load funktion og tilhørende knap
+export async function deleteFromArchive(melodyId) {
+    const response = await fetch(base_url + '/archive/' + melodyId, {
+        method: 'DELETE',
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to delete melody: ${response.statusText}`);
+    }
+
+    // Update the store after the deletion
+    await loadArchive();
+};
+
+
+
+
+
 //TODO: slet melodi fra arkiv
 //TODO: skal man kunne opdater

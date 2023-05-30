@@ -62,16 +62,13 @@ const wrap = middleware => (socket, next) => middleware(socket.request, {}, next
 io.use(wrap(sessionMiddleware));
 
 io.on("connection", (socket) => {
-    console.log("Client connected to us")
+    console.log("A client connected to us")
 
-    if (socket.request.session.userId) {
-        console.log("Welcome", socket.request.session.userId);
-    }
-
-    socket.on("message", (data) => {
+    socket.on("newMelodyMessage", (data) => {
         console.log("Client sent a message, let's reply")
-        //data.username = socket.request.session.username;
-        io.emit("response", socket.request.session);
+        // send til alle undtagen afsender
+        socket.broadcast.emit("newMelodyMessage", data);
+
     });
 });
 
