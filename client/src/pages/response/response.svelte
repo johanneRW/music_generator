@@ -1,31 +1,21 @@
 <script>
 
     import Keyboard from "../../Keyboard/keyboard.svelte";
-    //import NNNoteLog from "../../NoteLog/NNNoteLog.svelte";
-    //import PlayUserMelodyButton from "../../PlayerControles/PlayUserMelodyButton.svelte";
-    //import StopButton from "../../PlayerControles/StopButton.svelte";
-    //import ClearNoteLogButton from "../../PlayerControles/ClearNoteLogButton.svelte";
-    //import GenerateResponseButton from "../../PlayerControles/GenerateResponseButton.svelte";
-    //import PlayNNMelodyButton from "../../PlayerControles/PlayNNMelodyButton.svelte";
-    //import UserNoteLog from "../../NoteLog/UserNoteLog.svelte";
     import {onDestroy, onMount, tick} from "svelte";
     import {
         clearNNMelody,
-        clearUserMelody, getNoteName, isPlaying, loadedDelay, nnDelay,
+        clearUserMelody, getNoteName, isPlaying, nnDelay,
         nnMelody,
         nnMelodyPosition, playNNMelody, playUserMelody, stopPlaying, userDelay,
         userMelody,
         userMelodyPosition
     } from "../../store/playerStore.js";
-    //import UserDelaySlider from "../../PlayerControles/UserDelaySlider.svelte";
-    //import NNDelaySlider from "../../PlayerControles/NNDelaySlider.svelte";
-    //import NNSaveButton from "../../PlayerControles/NNSaveButton.svelte";
-    //import NoteLog from "../../NoteLog/NoteLog.svelte";
     import Button from "../../PlayerControles/Button.svelte";
     import {addToArchive} from "../../store/archiveStore.js";
     import {get} from "svelte/store";
     import Slider from "../../PlayerControles/Slider.svelte";
     import * as tf from "@tensorflow/tfjs";
+    import toastr from "toastr"
     import {generateMelody, temperature} from "../../store/NNStore.js";
     import {user} from "../../store/store.js";
 
@@ -36,6 +26,7 @@
     let noteLimit = 10;
 
     function saveMelody() {
+        toastr.info("Saved NN melody!")
         addToArchive(get(nnMelody))
     }
 
@@ -72,11 +63,8 @@
         while (userInput.length < 50) {
             userInput.push(0);  // Add 0 (or any other "dummy" value) until the length is 50
         }
-        await generateMelody(model, userInput).then(
-            melody => {
-                nnMelody.set(melody);
-            }
-        );
+        let melody = await generateMelody(model, userInput)
+        nnMelody.set(melody)
     }
     onDestroy(() => {
         clearUserMelody()

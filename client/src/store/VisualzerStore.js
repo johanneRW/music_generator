@@ -1,6 +1,8 @@
-
 import {get, writable} from "svelte/store";
-import {nnMelody, nnMelodyPosition} from "./playerStore.js";
+
+export const bubbles = writable([]);
+
+/*import {nnMelody, nnMelodyPosition} from "./playerStore.js";
 
 const noteMin = 48;  // C3
 const noteMax = 72;  // C5
@@ -19,10 +21,11 @@ function noteToColor(note) {
     const g = Math.floor(128 * Math.sin(normalizedNote * 2 * Math.PI + 2/3 * Math.PI) + 128);
     const b = Math.floor(128 * Math.sin(normalizedNote * 2 * Math.PI + 4/3 * Math.PI) + 128);
     return `${r}, ${g}, ${b}`;
-}
+}*/
 
-export const bubbles = writable([]);
 
+
+/*
 nnMelodyPosition.subscribe($position => {
     if ($position >= 0) { // Check if a valid position
         const note = get(nnMelody)[$position];
@@ -37,3 +40,4 @@ nnMelodyPosition.subscribe($position => {
     }
 });
 
+*/

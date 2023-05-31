@@ -1,5 +1,5 @@
 <script>
-    // TODO: link til kilde
+    // source:https://svelte.dev/repl/d0db1849a7f24d22a8dcc5b5a1a2b1bf?version=3.46.2
 
     export let noteNum;
     export let keyWidth = 56;

@@ -9,25 +9,25 @@
 	let username
 	let email
 
-	function handleSubmit() {
+	async function handleSubmit() {
 		const status = attemptSignup(username, password, email)
 		const progress = toastr.info("Working ...", "...", {
 			progressBar: true,
 			timeOut: 1000,
 		})
 
-		status.then((value) => {
-			progress.remove()
-			if (value === 200) {
-				toastr.success("Yay, we have sent you an email")
-				navigate("/", { replace: true })
-			} else {
-				toastr.error(
-					"The username or email is already in use. Please try signing up with a different username or email",
-					"Signup failed"
-				)
-			}
-		})
+		let responseCode = await status
+
+		progress.remove()
+		if (responseCode === 200) {
+			toastr.success("Yay, we have sent you an email")
+			navigate("/", { replace: true })
+		} else {
+			toastr.error(
+				"The username or email is already in use. Please try signing up with a different username or email",
+				"Signup failed"
+			)
+		}
 	}
 </script>
 

@@ -1,34 +1,28 @@
 <script>
-    //import NNNoteLog from "../../NoteLog/NNNoteLog.svelte";
-    import GenerateMelodyButton from "../../PlayerControles/GenerateMelodyButton.svelte";
-    //import PlayNNMelodyButton from "../../PlayerControles/PlayNNMelodyButton.svelte";
-    //import StopButton from "../../PlayerControles/StopButton.svelte";
+
     import {onDestroy, onMount, tick} from "svelte";
     import {
         clearNNMelody, getNoteName,
-        isPlaying, loadedDelay, nnDelay,
+        isPlaying, nnDelay,
         nnMelody,
         nnMelodyPosition,
         playNNMelody,
-        stopPlaying, userMelody
+        stopPlaying,
     } from "../../store/playerStore.js";
     import Visualizer from "./Visualizer.svelte";
-    //import NNDelaySlider from "../../PlayerControles/NNDelaySlider.svelte";
-    //import NNSaveButton from "../../PlayerControles/NNSaveButton.svelte";
     import Button from "../../PlayerControles/Button.svelte";
     import {addToArchive} from "../../store/archiveStore.js";
     import {get} from "svelte/store";
     import {generateMelody, nVocab, temperature} from "../../store/NNStore.js";
     import Slider from "../../PlayerControles/Slider.svelte";
     import * as tf from "@tensorflow/tfjs";
+    import toastr from "toastr"
     import {socket} from "../../store/socketStore.js";
     import {user} from "../../store/store.js";
 
 
     let model
     let isDisabled = false;
-
-
 
     onMount(async ()=>{
         model = await tf.loadLayersModel("model.json");
@@ -45,24 +39,18 @@
             await tick(); // Update DOM after generating melody
         }, 50); // Delay of 50 milliseconds
     }
-    function genrateMelody() {
+    async function genrateMelody() {
         // Generate melody based on random seed
         let randomSeed = Array.from({length: 50}, () => Math.floor(Math.random() * nVocab));
-        generateMelody(model, randomSeed).then(
-            melody => {
-                nnMelody.set(melody)
-                $socket.emit("newMelodyMessage", melody)
-                console.log("Sent message")
-            }
-        )
+        let melody = await generateMelody(model, randomSeed)
+        nnMelody.set(melody)
+        $socket.emit("newMelodyMessage", melody)
+        console.log("Sent message")
     }
-    //TODO:sørg for at disable stadig fungere som det skal
-
-
-
 
     function saveMelody() {
         addToArchive(get(nnMelody))
+        toastr.info("Saved NN melody!")
     }
 
     async function handlePlay() {
@@ -76,6 +64,9 @@
 </script>
 
 <div>
+    <div class={isDisabled ? '' : 'hidden'} id="progress">
+        Generating a new melody ...
+    </div>
     <div class="row">
         <!--<NNDelaySlider/>-->
         <p>Delay: {$nnDelay}</p>
@@ -106,7 +97,7 @@
             <Button disabled={($nnMelody.length === 0||!$user.isLoggedIn)} color="purple" handleClick={saveMelody}>Save NN Melody</Button>
         </div>
         <!--<Visualizer/>-->
-    <Visualizer/>
+    <Visualizer source="nnMelody"/>
 
 </div>
 <style>
@@ -138,5 +129,20 @@
     .melodyContainer p.selected {
         background-color: rgb(255, 206, 43);
         border-radius: 20px;
+    }
+
+    #progress {
+        position: fixed;
+        top: 15vh;
+        left: 5vw;
+        width: 20vh;
+        height: 5vh;
+        background-color: #535bf2;
+        color: white;
+        z-index: 9999;
+    }
+
+    .hidden{
+        display: none;
     }
 </style>

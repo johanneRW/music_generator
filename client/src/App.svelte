@@ -22,7 +22,7 @@
         checkIsLoggedIn()
     })
 
-    $socket.on("newMelodyMessage", (data) => {
+  /*  $socket.on("newMelodyMessage", (data) => {
         console.log("new melody", data)
         loadedMelody.set(data)
         toastr.info(
@@ -30,22 +30,34 @@
 //TODO: ryd ud i nogle af variablerne i toastr
         {
             "closeButton": true,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-top-right",
             "preventDuplicates": true,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
         })
+    });*/
+    $socket.on("newMelodyMessage", (data) => {
+        console.log("new melody", data)
+        sessionStorage.setItem('newMelody', JSON.stringify(data));
+        toastr.info(
+            "En anden bruger har netop dannet en ny melodi. <a href='/load'>Klik her for at høre den!</a>",
+            {
+                "closeButton": true,
+                "preventDuplicates": true,
+                "timeOut": "10000",
+            }
+        );
     });
+
+   /* $socket.on("newMelodyMessage", (data) => {
+        console.log("new melody", data)
+        // Gem melodien i sessionslagring.
+        sessionStorage.setItem('newMelody', JSON.stringify(data));
+        toastr.info(
+            "En anden bruger har netop dannet en ny melodi. <a href='load'>Klik her for at høre den!</a>",
+            {
+                "closeButton": true,
+                "preventDuplicates": true,
+            }
+        );
+    });*/
 
 </script>
 

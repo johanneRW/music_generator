@@ -9,18 +9,17 @@
 	let username
 	let password
 
-	function handleSubmit() {
+	async function handleSubmit() {
 		const promise = attemptLogin(username, password)
-		promise.then((status) => {
-			if (status === 200) {
-				navigate("/", { replace: true })
-			} else {
-				toastr.error(
-					"Unfortunately we could not log you in. Please check your username and password.",
-					"Login failed"
-				)
-			}
-		})
+		let responseCode = await promise
+		if (responseCode === 200) {
+			navigate("/", { replace: true })
+		} else {
+			toastr.error(
+				"Unfortunately we could not log you in. Please check your username and password.",
+				"Login failed"
+			)
+		}
 	}
 </script>
 

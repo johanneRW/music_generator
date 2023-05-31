@@ -1,41 +1,28 @@
 <script>
     import Keyboard from "../../Keyboard/keyboard.svelte";
-    //import UserNoteLog from "../../NoteLog/UserNoteLog.svelte";
-    //import PlayUserMelodyButton from "../../PlayerControles/PlayUserMelodyButton.svelte";
-    //import SaveButton from "../../PlayerControles/NNSaveButton.svelte";
-    //import StopButton from "../../PlayerControles/StopButton.svelte";
-    //import ClearNoteLogButton from "../../PlayerControles/ClearNoteLogButton.svelte";
     import {onDestroy} from "svelte";
     import {
         clearNNMelody,
-        clearUserMelody, getNoteName, isPlaying, loadedDelay,
-        nnMelody,
-        nnMelodyPosition, playUserMelody, stopPlaying, userDelay,
+        clearUserMelody, getNoteName, isPlaying, playUserMelody, stopPlaying, userDelay,
         userMelody,
         userMelodyPosition
     } from "../../store/playerStore.js";
-    //import UserDelaySlider from "../../PlayerControles/UserDelaySlider.svelte";
-    //import UserSaveButton from "../../PlayerControles/UserSaveButton.svelte";
-    //import NoteLog from "../../NoteLog/NoteLog.svelte";
     import Button from "../../PlayerControles/Button.svelte";
     import {addToArchive} from "../../store/archiveStore.js";
     import {get} from "svelte/store";
     import Slider from "../../PlayerControles/Slider.svelte";
     import {user} from "../../store/store.js";
+    import toastr from "toastr"
 
     async function handlePlayUserMelody() {
         await playUserMelody()
     }
-    /*
-    let isDisabled = false;
-
-    $: isDisabled = ($userMelody.length === 0||$isPlaying);*/
-
     function clearNoteLog() {
         clearUserMelody()
     }
 
     function saveUserMelody() {
+        toastr.info("Saved user melody!")
         addToArchive(get(userMelody))
     }
     let noteLimit = 100;

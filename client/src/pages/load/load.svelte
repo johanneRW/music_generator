@@ -1,17 +1,13 @@
 <script>
-    import {onDestroy} from "svelte";
+    import {onDestroy, onMount} from "svelte";
     import {
         clearLoadedMelody, getNoteName, isPlaying, loadedDelay,
         loadedMelody,
-        loadedMelodyPosition, nnDelay, nnMelody, playLoadedMelody, stopPlaying, userMelody,
+        loadedMelodyPosition, playLoadedMelody, stopPlaying,
     } from "../../store/playerStore.js";
-    //import StopButton from "../../PlayerControles/StopButton.svelte";
+    import toastr from "toastr"
     import Visualizer from "../generator/Visualizer.svelte";
-    //import PlayLoadMelodyButton from "../../PlayerControles/PlayLoadMelodyButton.svelte";
-
-    //import LoadSaveButton from "../../PlayerControles/LoadSaveButton.svelte";
     import {globalHistory} from "svelte-navigator";
-    //import LoadDelaySlider from "../../PlayerControles/LoadDelaySlider.svelte";
     import Button from "../../PlayerControles/Button.svelte";
     import {addToArchive} from "../../store/archiveStore.js";
     import {get} from "svelte/store";
@@ -19,14 +15,30 @@
     import {user} from "../../store/store.js";
 
 
+
     let from = globalHistory.location.state ? globalHistory.location.state.from : null;
     let isFromArchive = from === 'archive';
+
+    onMount(() => {
+        if(isFromArchive){
+            return
+        }
+        const melodyParam = sessionStorage.getItem('newMelody');
+        if (melodyParam) {
+            const melody = JSON.parse(melodyParam);
+            loadedMelody.set(melody);
+            // Fjern melodien fra sessionslagring for at undgå forvirring.
+            sessionStorage.removeItem('newMelody');
+        }
+    });
+
 
     async function handlePlayLoadedMelody() {
         await playLoadedMelody()
     }
 
     function saveMelody() {
+        toastr.info("Saved melody!")
         addToArchive(get(loadedMelody))
     }
 
@@ -65,7 +77,7 @@
         {/if}
     </div>
     <!--<Visualizer/>-->
-    <Visualizer {loadedMelody}{loadedMelodyPosition} />
+    <Visualizer source="loadedMelody" />
 </div>
 
 <style>
