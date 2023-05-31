@@ -1,10 +1,10 @@
 <!-- Based on https://svelte.dev/repl/5673ff403af14411b0cd1785be3d996f?version=3.58.0 -->
 <script>
-	import { user } from "../store/store"
+    import {user} from "../store/userStore.js"
 </script>
 
 {#if $user.isLoggedIn}
-	<slot name="authed" />
+    <slot name="authed"/>
 {:else}
-	<slot name="not_authed" />
+    <slot name="not_authed"/>
 {/if}

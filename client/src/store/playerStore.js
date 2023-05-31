@@ -1,6 +1,6 @@
 import {writable} from "svelte/store"
 import {get} from "svelte/store"
-import {tick} from "svelte";
+import {tick} from "svelte"
 
 const keyToPlaybackRate = {
     48: 0.5, // C3
@@ -57,7 +57,7 @@ const pitch_to_note_dict = {
     69: "A4",
     70: "A#4",
     71: "B4",
-    72: "C5"
+    72: "C5",
 }
 
 let audioContext
@@ -66,116 +66,67 @@ let isReady = false
 let intervalId
 
 async function initAudio() {
-    audioContext = new AudioContext();
-    const response = await fetch("/lyd2.wav");
-    const arrayBuffer = await response.arrayBuffer();
-    buffer = await audioContext.decodeAudioData(arrayBuffer);
-    isReady = true;
+    audioContext = new AudioContext()
+    const response = await fetch("/sound.wav")
+    const arrayBuffer = await response.arrayBuffer()
+    buffer = await audioContext.decodeAudioData(arrayBuffer)
+    isReady = true
 }
 
-/*async function playMelody(melody, position, delay) {
-    isPlaying.set(true)
-    position.set(-1)
-    intervalId = setInterval(async () => {
-        position.update((value) => {
-            value++;
-            return value
-        })
-        if (get(position) < melody.length) {
-            await tick();
-            let note = melody[get(position)];
-            await playNote(note)
-        } else {
-            stopPlaying();
-            position.set(-1)
-        }
-    }, get(delay));
-}*/
-
 async function playMelody(melody, position, delay) {
-    stopPlaying(); // Stop any previous melodies
+    stopPlaying() // Stop any previous melodies
 
     isPlaying.set(true)
     position.set(-1)
 
     intervalId = setInterval(async () => {
         position.update((value) => {
-            value++;
+            value++
             return value
         })
 
         if (get(position) < melody.length) {
-            await tick();
-            let note = melody[get(position)];
+            await tick()
+            let note = melody[get(position)]
             await playNote(note)
         } else {
-            stopPlaying();
+            stopPlaying()
             position.set(-1)
         }
-    }, get(delay));
-}
-
-
-//alternativ til playMelody, der benytter en setTimeout i stedet for interval potentielt en løsning på at melodien bliver langsommere og langsommere, skal testes med NNMelody for at kunne afgøre det.
-/*let currentTimeout = null;
-async function playMelody(melody, position, delay) {
-    // If there is an ongoing playback, stop it first
-    if (get(isPlaying)) {
-        stopPlaying();
-    }
-
-    let currentPosition = 0;
-
-    async function playNoteAndAdvance() {
-        isPlaying.set(true);
-        if (currentPosition < melody.length) {
-            position.set(currentPosition);
-            await tick();
-            await playNote(melody[currentPosition]);
-            currentPosition++;
-            currentTimeout = setTimeout(playNoteAndAdvance, get(delay));
-        } else {
-            stopPlaying();
-            position.set(-1);
-        }
-    }
-
-    await playNoteAndAdvance();
-}*/
-
-
-//I musikteori er dette kendt som at "folde" toner inden for en bestemt oktav.
-export function foldNoteIntoInterval(note) {
-    let interval_size = maxNote - minNote + 1;
-    while (note < minNote) {
-        note += interval_size;
-    }
-    while (note > maxNote) {
-        note -= interval_size;
-    }
-    return note;
+    }, get(delay))
 }
 
 export const userMelody = writable([])
 export const userMelodyPosition = writable(-1)
-export const userDelay = writable(500);
+export const userDelay = writable(500)
 
 export const nnMelody = writable([])
 export const nnMelodyPosition = writable(-1)
-export const nnDelay = writable(500);
-
+export const nnDelay = writable(500)
 
 export const loadedMelody = writable([])
 export const loadedMelodyPosition = writable(-1)
-export const loadedDelay = writable(500);
+export const loadedDelay = writable(500)
 
-export const isPlaying=writable(false)
+export const isPlaying = writable(false)
+
+//In music theory, this is known as "folding" tones within a specific octave.
+export function foldNoteIntoInterval(note) {
+    let interval_size = maxNote - minNote + 1
+    while (note < minNote) {
+        note += interval_size
+    }
+    while (note > maxNote) {
+        note -= interval_size
+    }
+    return note
+}
 
 export const addNote = (note, noteLimit) => {
     userMelody.update(items => {
         // Delete the first note if we reach the note limit
         if (items.length > noteLimit) {
-            items.splice(0, 1);
+            items.splice(0, 1)
         }
 
         // Add the new note
@@ -204,18 +155,16 @@ export const clearLoadedMelody = () => {
 }
 
 export async function playNote(pitch) {
-   // let foldedPitch = foldNoteIntoInterval(pitch, minNote, maxNote);
 
     if (!isReady) {
         await initAudio()
     }
 
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    //source.playbackRate.value = keyToPlaybackRate[foldedPitch];
-    source.playbackRate.value = keyToPlaybackRate[pitch];
-    source.connect(audioContext.destination);
-    source.start(0);
+    const source = audioContext.createBufferSource()
+    source.buffer = buffer
+    source.playbackRate.value = keyToPlaybackRate[pitch]
+    source.connect(audioContext.destination)
+    source.start(0)
 }
 
 export async function playUserMelody() {
@@ -231,26 +180,15 @@ export async function playLoadedMelody() {
 }
 
 export function stopPlaying() {
-    isPlaying.set(false);
+    isPlaying.set(false)
     if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = null;  // Reset intervalId
+        clearInterval(intervalId)
+        intervalId = null  // Reset intervalId
     }
-
-   /* if (currentTimeout) {
-        clearTimeout(currentTimeout);
-        currentTimeout = null;  // Reset currentTimeout
-    }*/
-
-
 }
 
 export function getNoteName(midi_number) {
-    // Adjust the MIDI number to be within the given interval
-    //let adjusted_midi_number = foldNoteIntoInterval(midi_number, minNote, maxNote);
-    // Look up the note name in the dictionary
-    //let note_name = pitch_to_note_dict[adjusted_midi_number];
-    let note_name = pitch_to_note_dict[midi_number];
-    return note_name;
+    let note_name = pitch_to_note_dict[midi_number]
+    return note_name
 }
 

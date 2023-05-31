@@ -1,18 +1,18 @@
 <script>
     // source:https://svelte.dev/repl/d0db1849a7f24d22a8dcc5b5a1a2b1bf?version=3.46.2
 
-    import Key from "./key.svelte";
-    import {addNote, playNote} from "../store/playerStore.js";
+    import Key from "./Key.svelte"
+    import {addNote, playNote} from "../../store/playerStore.js"
 
-    export let octaves = 2;
-    export let middleC = 60;
-    export let keysPressed = [];
+    export let octaves = 2
+    export let middleC = 60
+    export let keysPressed = []
     export let noteLimit = 10
 
-    let keys;
+    let keys
     $: keys = [...Array(octaves * 12 + 1).keys()].map(
-        (i) => i + (middleC - Math.floor(octaves / 2) * 12)
-    );
+        (i) => i + (middleC - Math.floor(octaves / 2) * 12),
+    )
 
     function noteOn(event) {
         addNote(event.detail, noteLimit)

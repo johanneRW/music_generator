@@ -1,11 +1,11 @@
-import { Router } from "express"
+import {Router} from "express"
 import db from "../databases/connection.js"
 
 const router = Router()
 
 router.get("/archive", async (req, res) => {
     if (req.session.isAuth) {
-        const userId = req.session.userId;
+        const userId = req.session.userId
         const data = await db.all("SELECT id, timestamp, array as melody FROM archive WHERE user_id = ?", userId)
         res.send(data).status(200)
     } else {
@@ -15,12 +15,11 @@ router.get("/archive", async (req, res) => {
 
 router.post("/archive", async (req, res) => {
     if (req.session.isAuth) {
-        const userId = req.session.userId;
-        const item = req.body;
-        console.log(item.melody)
+        const userId = req.session.userId
+        const melodyObject = req.body
         await db.run(
             "INSERT INTO archive (user_id, timestamp, array) VALUES (?, ?, ?)",
-            [userId, item.timestamp, JSON.stringify(item.melody)],
+            [userId, melodyObject.timestamp, JSON.stringify(melodyObject.melody)],
         )
         res.sendStatus(200)
     } else {
@@ -29,27 +28,25 @@ router.post("/archive", async (req, res) => {
 })
 router.delete("/archive/:id", async (req, res) => {
     if (req.session.isAuth) {
-        const userId = req.session.userId;
-        const melodyId = req.params.id;
+        const userId = req.session.userId
+        const melodyId = req.params.id
 
-        const sql = `DELETE FROM archive WHERE id = ? AND user_id = ?`;
+        const sql = "DELETE FROM archive WHERE id = ? AND user_id = ?"
 
-        const stmt = await db.prepare(sql);
+        const stmt = await db.prepare(sql)
 
         try {
-            await stmt.run(melodyId, userId);
-            res.sendStatus(200);
+            await stmt.run(melodyId, userId)
+            res.sendStatus(200)
         } catch (error) {
-            console.error(`Failed to delete melody with id ${melodyId}:`, error);
-            res.sendStatus(500);
+            console.error(`Failed to delete melody with id ${melodyId}:`, error)
+            res.sendStatus(500)
         } finally {
-            await stmt.finalize();
+            await stmt.finalize()
         }
     } else {
-        res.sendStatus(403);
+        res.sendStatus(403)
     }
 });
-
-
 
 export default router

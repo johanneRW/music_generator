@@ -1,14 +1,13 @@
 <script>
-       export let value = 1;
-    export let min = 0;
-    export let max = 2;
-    export let step = 0.1;
-    export let default_value = 1;
-       export let disabled = false;
-
+    export let value = 1
+    export let min = 0
+    export let max = 2
+    export let step = 0.1
+    export let default_value = 1
+    export let disabled = false
 
     function reset() {
-        value = default_value;
+        value = default_value
     }
 </script>
 
